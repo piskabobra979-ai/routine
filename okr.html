@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>OKR Dashboard</title>
+<style>
+:root{
+  --bg:#0a0a0f;--bg2:#12121c;--surface:rgba(255,255,255,.035);--surface-hi:rgba(255,255,255,.06);
+  --stroke:rgba(255,255,255,.08);--stroke-hi:rgba(255,255,255,.16);
+  --txt:#f2f3f7;--txt-dim:#8b8d9c;--txt-faint:#5a5c6b;
+  --r:18px;--sb:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),transparent 60%),
+  radial-gradient(900px 500px at -10% 10%,rgba(34,211,238,.08),transparent 55%),var(--bg);
+  color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(80px + var(--sb))}
+.wrap{max-width:900px;margin:0 auto;padding:0 14px}
+
+/* nav */
+.nav{display:flex;align-items:center;gap:12px;padding:16px 14px;position:sticky;top:0;z-index:40;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:linear-gradient(to bottom,rgba(10,10,15,.92),rgba(10,10,15,.55));border-bottom:1px solid var(--stroke)}
+.nav .inner{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}
+.nav a{color:var(--txt-dim);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--stroke);transition:color .2s}
+.nav a:hover{color:var(--txt)}
+.nav h1{flex:1;font-size:18px;font-weight:700;margin:0}
+.nav .sync{border:none;background:linear-gradient(90deg,#7c5cff,#22d3ee);color:#fff;padding:8px 16px;
+  border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.nav .sync:active{transform:scale(.96)}
+
+/* overall progress */
+.overall{text-align:center;padding:26px 16px 10px}
+.overall .pct{font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;
+  background:linear-gradient(90deg,#7c5cff,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.overall .lbl{font-size:14px;color:var(--txt-dim);margin-top:2px}
+
+/* category filters */
+.filters{display:flex;gap:8px;overflow-x:auto;padding:10px 0 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.fbtn{flex:none;scroll-snap-align:start;border:1px solid var(--stroke-hi);background:var(--surface);
+  color:var(--txt-dim);padding:7px 14px;border-radius:99px;font-size:12.5px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.fbtn.act{color:#fff;border-color:currentColor}
+
+/* grid */
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+
+/* card */
+.card{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--r);overflow:hidden;
+  transition:border-color .3s}
+.card.done{opacity:.7}
+.card-h{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;user-select:none}
+.card-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;text-transform:uppercase;letter-spacing:.04em;flex:none}
+.card-info{flex:1;min-width:0}
+.card-info b{display:block;font-size:14.5px;font-weight:650;line-height:1.3;white-space:normal}
+.card-info small{color:var(--txt-faint);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+.card-ring{flex:none;width:56px;height:56px}
+.card-chev{color:var(--txt-faint);font-size:12px;flex:none;transition:transform .3s}
+.card.closed .card-chev{transform:rotate(-90deg)}
+.card-b{padding:4px 14px 14px}
+.card.closed .card-b{display:none}
+.card.done .card-badge{opacity:.6}
+
+/* KR rows */
+.kr{padding:12px 0;border-top:1px solid var(--stroke)}
+.kr:first-child{border-top:none}
+.kr-name{font-size:13.5px;font-weight:600;margin-bottom:8px;line-height:1.35}
+.kr-name .tag{font-size:10.5px;padding:2px 7px;border-radius:5px;margin-right:6px;font-weight:700;vertical-align:1px}
+/* progress bar */
+.pbar{height:7px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:8px}
+.pbar-fill{height:100%;border-radius:99px;transition:width .4s cubic-bezier(.22,1,.36,1)}
+.kr-input{display:flex;align-items:center;gap:10px;margin-top:6px}
+.kr-input input[type=number]{width:90px;background:var(--bg2);border:1px solid var(--stroke-hi);color:var(--txt);
+  border-radius:9px;padding:8px 10px;font-size:14px;font-family:inherit;outline:none;text-align:center;font-variant-numeric:tabular-nums}
+.kr-input input:focus{border-color:#7c5cff}
+.kr-input .target{font-size:12px;color:var(--txt-faint);font-variant-numeric:tabular-nums}
+.kr-input input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:7px;border-radius:99px;
+  background:rgba(255,255,255,.08);outline:none}
+.kr-input input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:var(--txt);cursor:pointer;border:3px solid #7c5cff;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+/* status toggle */
+.status-seg{display:flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--stroke);flex-wrap:wrap;gap:2px}
+.status-seg button{border:none;background:none;color:var(--txt-faint);padding:7px 12px;border-radius:7px;
+  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;flex:1;min-width:0;white-space:nowrap}
+.status-seg button.s-ns.act{background:rgba(255,255,255,.08);color:var(--txt-dim)}
+.status-seg button.s-ip.act{background:rgba(251,191,36,.18);color:#fbbf24}
+.status-seg button.s-done.act{background:rgba(52,224,161,.15);color:#34e0a1}
+
+/* done badge */
+.done-mark{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#34e0a1;padding:4px 10px;
+  border-radius:7px;background:rgba(52,224,161,.1);margin-top:4px}
+
+/* submit bar */
+.submitbar{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:12px 16px calc(12px + var(--sb));
+  background:linear-gradient(to top,rgba(10,10,15,.98) 60%,transparent)}
+.submitbar .inner{max-width:900px;margin:0 auto}
+.sendbtn{width:100%;border:none;border-radius:15px;padding:16px;font-size:15.5px;font-weight:700;font-family:inherit;
+  cursor:pointer;color:#fff;background:linear-gradient(90deg,#7c5cff,#9d6bff);
+  box-shadow:0 8px 28px rgba(124,92,255,.4);transition:transform .12s,opacity .2s;
+  display:flex;align-items:center;justify-content:center;gap:9px}
+.sendbtn:active{transform:scale(.97)}
+.sendbtn.busy{opacity:.6;pointer-events:none}
+.sendbtn.ok{background:linear-gradient(90deg,#34e0a1,#2bc98f);box-shadow:0 8px 28px rgba(52,224,161,.4)}
+
+.toast{position:fixed;bottom:calc(100px + var(--sb));left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--bg2);border:1px solid var(--stroke-hi);color:var(--txt);padding:13px 20px;border-radius:13px;
+  font-size:14px;z-index:90;opacity:0;transition:.3s;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="nav"><div class="inner">
+  <a href="index.html">← Трекер</a>
+  <h1>OKR Dashboard</h1>
+</div></div>
+
+<div class="wrap">
+  <div class="overall"><div class="pct" id="overallPct">0%</div><div class="lbl">загальний прогрес OKR</div></div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="submitbar"><div class="inner">
+  <button class="sendbtn" id="sendBtn" onclick="syncOKR()">
+    <span id="sendTxt">Синхронізувати OKR → Google Sheets</span></button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='okr_state_v1',HOOKKEY='routine_hook_v1';
+const CIRC=2*Math.PI*42;
+
+/* ═══════════════ COLORS ═══════════════ */
+const C={
+  work:'#3b82f6',finance:'#10b981',edu:'#f59e0b',
+  eighteen:'#ec4899',health:'#ef4444',brand:'#8b5cf6',
+  rel:'#06b6d4',leisure:'#f97316'
+};
+
+/* ═══════════════ DATA MODEL ═══════════════ */
+/* t: n=number, c=count, p=percent, s=status */
+const DATA=[
+{cat:'РОБОТА',ck:'work',ic:'💼',obs:[
+  {id:'wq1',n:'Випробувальний термін ENKO',sub:'Q1 · завершено',done:true,krs:[
+    {id:'wq1k1',n:'Incoming Sugar: 0 скарг, закриті інтеграції',t:'s'},
+    {id:'wq1k2',n:'ГУЧНІ: 15 продажів пісень',t:'s'},
+    {id:'wq1k3',n:'Комерція: 50 зустрічей, 1M грн продажів',t:'s'},
+    {id:'wq1k4',n:'Чарівна пісня: 20 закритих угод',t:'s'},
+    {id:'wq1k5',n:'Feedback: позитивний від CEO та тім-ліда',t:'s'},
+    {id:'wq1k6',n:'Система: AI-асистенти в кожному проєкті',t:'s'}
+  ]},
+  {id:'wy1',n:'ТОП-менеджер: фінансовий результат та нетворкінг',sub:'yearly',krs:[
+    {id:'wy1k1',n:'Financial Peak: закриті угоди',t:'n',tg:1000000,u:'грн/міс'},
+    {id:'wy1k2',n:'Networking: CRM + 2 зустрічі/тиждень',t:'s'},
+    {id:'wy1k3',n:'Industry Guidebook: чек-листи дистрибуції, АП, маркетингу',t:'s'},
+    {id:'wy1k4',n:'Multi-Project Flow: 80% рутини автоматизовано',t:'p'},
+    {id:'wy1k5',n:'Expert Brand: портфоліо кейсів за рік',t:'s'}
+  ]}
+]},
+{cat:'ФІНАНСИ',ck:'finance',ic:'💰',obs:[
+  {id:'fy1',n:'Каскадний метод депозитів та диверсифікація',sub:'до 01.09.2026',krs:[
+    {id:'fy1k1',n:'Гривневий фундамент: 3 депозити',t:'n',tg:57000,u:'грн'},
+    {id:'fy1k2',n:'Валютна диверсифікація',t:'n',tg:76000,u:'грн'},
+    {id:'fy1k3',n:'Пенсійний старт: платежі до НПФ',t:'c',tg:8,u:'платежів'},
+    {id:'fy1k4',n:'Цільовий розподіл капіталу на 01.09',t:'s'}
+  ]}
+]},
+{cat:'НАВЧАННЯ',ck:'edu',ic:'📚',obs:[
+  {id:'ey1',n:'Коледж: стабільність 3-4 курс',sub:'yearly',krs:[
+    {id:'ey1k1',n:'Frictionless Communication: 0 конфліктів',t:'s'},
+    {id:'ey1k2',n:'Academic Debt Zero: 100% атестацій',t:'p'},
+    {id:'ey1k3',n:'Practice & Exams: практика та сесії',t:'s'},
+    {id:'ey1k4',n:'Efficiency: 80% робіт через AI',t:'p'}
+  ]},
+  {id:'ey2',n:'НМТ: результат 175+',sub:'травень-червень',krs:[
+    {id:'ey2k1',n:'Результат НМТ',t:'n',tg:200,u:'балів'},
+    {id:'ey2k2',n:'90% на пробних тестах',t:'p'}
+  ]},
+  {id:'ey3',n:'Курс Бородатюка: менеджерські знання',sub:'до 31.03.2026',krs:[
+    {id:'ey3k1',n:'100% курсу пройдено',t:'p'},
+    {id:'ey3k2',n:'База знань (Notion/Guidebook)',t:'s'},
+    {id:'ey3k3',n:'Впроваджено методик в ENKO',t:'c',tg:5,u:'методик'}
+  ]},
+  {id:'ey4',n:'Logic Pro & FL Studio: автономія',sub:'yearly',krs:[
+    {id:'ey4k1',n:'Розуміння інтерфейсу обох DAW',t:'s'},
+    {id:'ey4k2',n:'Створено демок',t:'c',tg:10,u:'демок'}
+  ]},
+  {id:'ey5',n:'Водіння: практика на механіці',sub:'до січня 2027',krs:[
+    {id:'ey5k1',n:'Впевненість у керуванні',t:'s'},
+    {id:'ey5k2',n:'Тести ПДР: результат з 20',t:'n',tg:20,u:'/20'}
+  ]},
+  {id:'ey6',n:'Кулінарія: базові навички',sub:'yearly',krs:[
+    {id:'ey6k1',n:'Рецептурний чек-лист',t:'c',tg:15,u:'страв'},
+    {id:'ey6k2',n:'Розуміння інгредієнтів та технік',t:'s'}
+  ]},
+  {id:'ey7',n:'Life Ops: здоровʼя, фінанси, побут',sub:'yearly',krs:[
+    {id:'ey7k1',n:'Finance & Engineering: комуналка, лічильники',t:'s'},
+    {id:'ey7k2',n:'Health Literacy: базова аптечка',t:'s'},
+    {id:'ey7k3',n:'Domestic Care: маркування одягу',t:'s'},
+    {id:'ey7k4',n:'Електрика та фізика в побуті',t:'s'}
+  ]},
+  {id:'ey8',n:'Широкий світогляд',sub:'yearly',krs:[
+    {id:'ey8k1',n:'Заміна 50% контенту на пізнавальний',t:'p'}
+  ]}
+]},
+{cat:'МЕНІ 18',ck:'eighteen',ic:'🎂',obs:[
+  {id:'a1',n:'Перша автономія: соло-життя',sub:'yearly',krs:[
+    {id:'a1k1',n:'Мобільний дім: базовий комплект',t:'s'},
+    {id:'a1k2',n:'Test Drive: 1 місяць соло',t:'s'},
+    {id:'a1k3',n:'Budget Audit: розрахунок вартості',t:'s'}
+  ]},
+  {id:'a2',n:'Документи по 18 років',sub:'листопад 2026',krs:[
+    {id:'a2k1',n:'ID-Card: оновлений паспорт',t:'s'},
+    {id:'a2k2',n:'Military Status: звірка в ТЦК',t:'s'},
+    {id:'a2k3',n:'Digital Identity: Дія та Резерв+',t:'s'}
+  ]}
+]},
+{cat:'ЗДОРОВ\'Я',ck:'health',ic:'🏥',obs:[
+  {id:'h1',n:'Фізична активність: система',sub:'yearly',krs:[
+    {id:'h1k1',n:'Consistency: тренувань/місяць',t:'c',tg:10,u:'тренувань'},
+    {id:'h1k2',n:'Data Literacy: заповнення метрик',t:'p'},
+    {id:'h1k3',n:'Daily Motion: 15 хв прогулянки щодня',t:'p'},
+    {id:'h1k4',n:'Visual Progress: енергія',t:'n',tg:10,u:'/10'}
+  ]},
+  {id:'h2',n:'Харчування: набір маси +0.5-1 кг/міс',sub:'yearly',krs:[
+    {id:'h2k1',n:'Weight Trend: приріст ваги',t:'n',tg:2,u:'кг'},
+    {id:'h2k2',n:'Protein Target: 1.6-1.8 г/кг',t:'s'},
+    {id:'h2k3',n:'3 прийоми їжі + перекуси',t:'p'},
+    {id:'h2k4',n:'Clean Fuel: цукор <10%',t:'s'},
+    {id:'h2k5',n:'Vitamins: щоденно',t:'p'}
+  ]},
+  {id:'h3',n:'Вода: 1.5-2 л щодня',sub:'yearly',krs:[
+    {id:'h3k1',n:'Volume: стабільне споживання',t:'p'},
+    {id:'h3k2',n:'Skin Quality: зменшення запалень',t:'s'},
+    {id:'h3k3',n:'Morning Routine: перша склянка',t:'p'}
+  ]},
+  {id:'h4',n:'Медичний контроль',sub:'yearly',krs:[
+    {id:'h4k1',n:'Q1 чекап: кров, стоматолог, зір',t:'s'},
+    {id:'h4k2',n:'Q4 чекап: повторний',t:'s'}
+  ]},
+  {id:'h5',n:'Тонзиліт: стійка ремісія',sub:'yearly',krs:[
+    {id:'h5k1',n:'Zero Flare-ups: 0 ангін за рік',t:'s'},
+    {id:'h5k2',n:'Visual Control: без набряку',t:'s'}
+  ]},
+  {id:'h6',n:'Енергоменеджмент: 8-9/10',sub:'yearly',krs:[
+    {id:'h6k1',n:'Energy Metric: ранкова енергія',t:'n',tg:10,u:'/10'},
+    {id:'h6k2',n:'Digital Boundaries: цифровий комендант',t:'p'},
+    {id:'h6k3',n:'Systemic Rest: 1 вихідний/тиждень',t:'p'}
+  ]},
+  {id:'h7',n:'Внутрішній спокій та впевненість',sub:'yearly',krs:[
+    {id:'h7k1',n:'Self-Assessment: спокій',t:'n',tg:10,u:'/10'},
+    {id:'h7k2',n:'Crisis Management: техніки стресу',t:'c',tg:3,u:'технік'}
+  ]}
+]},
+{cat:'МІЙ БРЕНД',ck:'brand',ic:'🎨',obs:[
+  {id:'b1',n:'Медіа-присутність та контент',sub:'yearly',krs:[
+    {id:'b1k1',n:'Consistency: 2-3 TikTok/Reels на тиждень',t:'s'},
+    {id:'b1k2',n:'Aesthetic Tone: візуальний стиль',t:'s'},
+    {id:'b1k3',n:'Engagement: перше віральне охоплення',t:'s'},
+    {id:'b1k4',n:'Daily Log: чесна рефлексія',t:'s'}
+  ]}
+]},
+{cat:'ВІДНОСИНИ',ck:'rel',ic:'💬',obs:[
+  {id:'r1',n:'Соціальні взаємодії: легкість та автентичність',sub:'yearly',krs:[
+    {id:'r1k1',n:'Quality Sorting: 0 часу на токсичних',t:'s'},
+    {id:'r1k2',n:'Random Joy: спонтанні знайомства',t:'s'},
+    {id:'r1k3',n:'Needs Fulfillment: за власним ритмом',t:'s'}
+  ]},
+  {id:'r2',n:'Сімʼя: взаємна повага до кордонів',sub:'yearly',krs:[
+    {id:'r2k1',n:'Dependency Reduction: 100% автономність',t:'p'},
+    {id:'r2k2',n:'Information Filter: коректна дистанція',t:'s'},
+    {id:'r2k3',n:'Moral Readiness: сімʼя готова до переїзду',t:'s'}
+  ]}
+]},
+{cat:'ВІДПОЧИНОК',ck:'leisure',ic:'✈️',obs:[
+  {id:'l1',n:'11 стратегічних подорожей',sub:'yearly',krs:[
+    {id:'l1k1',n:'Domestic Volume: поїздки Україною',t:'c',tg:10,u:'поїздок'},
+    {id:'l1k2',n:'Global Leap: закордонна подорож',t:'s'},
+    {id:'l1k3',n:'Budget Discipline',t:'n',tg:60000,u:'грн'},
+    {id:'l1k4',n:'Memory Assets: контент з поїздок',t:'s'}
+  ]}
+]}
+];
+
+/* ═══════════════ STATE ═══════════════ */
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+let ST=loadState();
+function saveState(){localStorage.setItem(KEY,JSON.stringify(ST))}
+function getVal(id,kr){
+  if(ST[id]!==undefined)return ST[id];
+  // defaults for completed Q1
+  const cat=DATA.find(d=>d.obs.some(o=>o.id===id?.split('k')[0]?.replace(/k\d+$/,'')));
+  if(kr.t==='s')return 'not_started';
+  return 0;
+}
+function setVal(id,v){ST[id]=v;saveState();renderAll()}
+
+/* ═══════════════ PROGRESS CALC ═══════════════ */
+function krProgress(kr){
+  const v=ST[kr.id];
+  if(kr.t==='s'){
+    if(v==='achieved')return 1;if(v==='in_progress')return 0.5;return 0;
+  }
+  if(kr.t==='p')return Math.min((v||0)/100,1);
+  if(kr.t==='n'||kr.t==='c'){
+    if(!kr.tg)return v?1:0;
+    return Math.min((v||0)/kr.tg,1);
+  }
+  return 0;
+}
+function objProgress(obj){
+  if(obj.done)return 1;
+  if(!obj.krs.length)return 0;
+  return obj.krs.reduce((s,kr)=>s+krProgress(kr),0)/obj.krs.length;
+}
+function catProgress(cat){
+  const progs=cat.obs.map(o=>objProgress(o));
+  return progs.length?progs.reduce((a,b)=>a+b,0)/progs.length:0;
+}
+function overallProgress(){
+  const progs=DATA.map(d=>catProgress(d));
+  return progs.length?progs.reduce((a,b)=>a+b,0)/progs.length:0;
+}
+
+/* ═══════════════ SVG RING ═══════════════ */
+function ring(pct,color,size=56){
+  const off=CIRC*(1-pct);
+  const p=Math.round(pct*100);
+  return`<svg viewBox="0 0 100 100" width="${size}" height="${size}">
+    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="7"/>
+    <circle cx="50" cy="50" r="42" fill="none" stroke="${color}" stroke-width="7"
+      stroke-dasharray="${CIRC}" stroke-dashoffset="${off}" transform="rotate(-90 50 50)"
+      stroke-linecap="round" style="transition:stroke-dashoffset .6s"/>
+    <text x="50" y="50" text-anchor="middle" dy=".35em" fill="${color}" font-size="20" font-weight="700">${p}</text>
+  </svg>`;
+}
+
+/* ═══════════════ RENDER ═══════════════ */
+let activeFilter='all';
+let closedCards={};
+
+function renderFilters(){
+  const el=document.getElementById('filters');
+  let h=`<div class="fbtn ${activeFilter==='all'?'act':''}" style="${activeFilter==='all'?'color:#7c5cff;border-color:#7c5cff':''}" onclick="setFilter('all')">Всі</div>`;
+  DATA.forEach(d=>{
+    const act=activeFilter===d.ck;
+    h+=`<div class="fbtn ${act?'act':''}" style="${act?'color:'+C[d.ck]+';border-color:'+C[d.ck]:''}" onclick="setFilter('${d.ck}')">${d.ic} ${d.cat}</div>`;
+  });
+  el.innerHTML=h;
+}
+function setFilter(f){activeFilter=f;renderAll()}
+
+function renderKR(kr,color,isDone){
+  const v=ST[kr.id];
+  let input='';
+  if(isDone){
+    return`<div class="kr"><div class="kr-name">${kr.n}</div><div class="done-mark">✓ Досягнуто</div></div>`;
+  }
+  if(kr.t==='s'){
+    const cur=v||'not_started';
+    input=`<div class="status-seg">
+      <button class="s-ns ${cur==='not_started'?'act':''}" onclick="setVal('${kr.id}','not_started')">Не розпочато</button>
+      <button class="s-ip ${cur==='in_progress'?'act':''}" onclick="setVal('${kr.id}','in_progress')">В процесі</button>
+      <button class="s-done ${cur==='achieved'?'act':''}" onclick="setVal('${kr.id}','achieved')">Досягнуто</button>
+    </div>`;
+  } else if(kr.t==='p'){
+    const cv=v||0;
+    input=`<div class="kr-input"><input type="range" min="0" max="100" value="${cv}" oninput="setVal('${kr.id}',+this.value)"/>
+      <span class="target" style="color:${color};min-width:36px;text-align:right">${cv}%</span></div>
+      <div class="pbar"><div class="pbar-fill" style="width:${cv}%;background:${color}"></div></div>`;
+  } else if(kr.t==='n'){
+    const cv=v||0;const pct=kr.tg?Math.min(cv/kr.tg*100,100):0;
+    input=`<div class="kr-input"><input type="number" value="${cv||''}" placeholder="0" oninput="setVal('${kr.id}',+this.value)"/>
+      <span class="target">${kr.tg?'/ '+kr.tg.toLocaleString():''}${kr.u?' '+kr.u:''}</span></div>
+      ${kr.tg?`<div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div>`:''}`;
+  } else if(kr.t==='c'){
+    const cv=v||0;const pct=kr.tg?Math.min(cv/kr.tg*100,100):0;
+    input=`<div class="kr-input"><input type="number" min="0" max="${kr.tg||999}" value="${cv||''}" placeholder="0" oninput="setVal('${kr.id}',+this.value)"/>
+      <span class="target">/ ${kr.tg} ${kr.u||''}</span></div>
+      <div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div>`;
+  }
+  return`<div class="kr"><div class="kr-name"><span class="tag" style="background:${color}22;color:${color}">${kr.t==='s'?'СТАТУС':kr.t==='p'?'%':'ЧИСЛО'}</span>${kr.n}</div>${input}</div>`;
+}
+
+function renderCard(obj,cat){
+  const color=C[cat.ck];
+  const pct=objProgress(obj);
+  const closed=closedCards[obj.id]?'closed':'';
+  const doneClass=obj.done?'done':'';
+  const krsHtml=obj.krs.map(kr=>renderKR(kr,color,obj.done)).join('');
+  return`<div class="card ${closed} ${doneClass}" data-oid="${obj.id}" style="border-left:3px solid ${color}44">
+    <div class="card-h" onclick="toggleCard('${obj.id}')">
+      <div class="card-badge" style="background:${color}18;color:${color}">${cat.ic} ${cat.cat}</div>
+      <div class="card-info"><b>${obj.n}</b><small>${obj.sub||''}</small></div>
+      ${ring(pct,color)}
+      <div class="card-chev">▾</div>
+    </div>
+    <div class="card-b">${krsHtml}</div></div>`;
+}
+
+function renderAll(){
+  renderFilters();
+  const grid=document.getElementById('grid');
+  let html='';
+  DATA.forEach(cat=>{
+    if(activeFilter!=='all'&&activeFilter!==cat.ck)return;
+    cat.obs.forEach(obj=>{html+=renderCard(obj,cat)});
+  });
+  grid.innerHTML=html;
+  // overall
+  const op=Math.round(overallProgress()*100);
+  document.getElementById('overallPct').textContent=op+'%';
+}
+
+function toggleCard(id){closedCards[id]=!closedCards[id];
+  const el=document.querySelector(`[data-oid="${id}"]`);if(el)el.classList.toggle('closed',closedCards[id])}
+
+/* ═══════════════ INIT COMPLETED Q1 ═══════════════ */
+(function initDone(){
+  DATA.forEach(cat=>cat.obs.forEach(obj=>{
+    if(obj.done)obj.krs.forEach(kr=>{if(!ST[kr.id])ST[kr.id]='achieved'});
+  }));
+  saveState();
+})();
+
+/* ═══════════════ SYNC ═══════════════ */
+function buildPayload(){
+  const p={'Дата':new Date().toISOString().slice(0,10),'Тип':'OKR Snapshot'};
+  DATA.forEach(cat=>{cat.obs.forEach(obj=>{
+    p[obj.n+' (%)']=Math.round(objProgress(obj)*100);
+    obj.krs.forEach(kr=>{
+      const v=ST[kr.id];
+      if(kr.t==='s')p[kr.n]=v==='achieved'?'Досягнуто':v==='in_progress'?'В процесі':'Не розпочато';
+      else p[kr.n]=v||0;
+    });
+  })});
+  return p;
+}
+async function syncOKR(){
+  const hook=localStorage.getItem(HOOKKEY);
+  const btn=document.getElementById('sendBtn'),txt=document.getElementById('sendTxt');
+  const payload=buildPayload();
+  if(!hook){try{await navigator.clipboard.writeText(JSON.stringify(payload,null,2))}catch(e){}
+    toast('Webhook не підключено. JSON скопійовано.');return}
+  btn.classList.add('busy');txt.textContent='Синхронізую…';
+  try{await fetch(hook,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    btn.classList.remove('busy');btn.classList.add('ok');txt.textContent='OKR синхронізовано ✓';
+    setTimeout(()=>{btn.classList.remove('ok');txt.textContent='Синхронізувати OKR → Google Sheets'},3500);
+  }catch(e){btn.classList.remove('busy');txt.textContent='Синхронізувати OKR → Google Sheets';toast('Помилка мережі.')}
+}
+
+let tt_=0;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(tt_);tt_=setTimeout(()=>t.classList.remove('show'),2600)}
+
+renderAll();
+</script>
+</body>
+</html>
