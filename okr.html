@@ -7,457 +7,342 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>OKR Dashboard</title>
 <style>
-:root{
-  --bg:#0a0a0f;--bg2:#12121c;--surface:rgba(255,255,255,.035);--surface-hi:rgba(255,255,255,.06);
+:root{--bg:#0a0a0f;--bg2:#12121c;--surface:rgba(255,255,255,.035);--surface-hi:rgba(255,255,255,.06);
   --stroke:rgba(255,255,255,.08);--stroke-hi:rgba(255,255,255,.16);
-  --txt:#f2f3f7;--txt-dim:#8b8d9c;--txt-faint:#5a5c6b;
-  --r:18px;--sb:env(safe-area-inset-bottom,0px);
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0}
+  --txt:#f2f3f7;--txt-dim:#8b8d9c;--txt-faint:#5a5c6b;--r:16px;--sb:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;padding:0}
 body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),transparent 60%),
   radial-gradient(900px 500px at -10% 10%,rgba(34,211,238,.08),transparent 55%),var(--bg);
   color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
   -webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(80px + var(--sb))}
-.wrap{max-width:900px;margin:0 auto;padding:0 14px}
-
-/* nav */
+.wrap{max-width:680px;margin:0 auto;padding:0 14px}
 .nav{display:flex;align-items:center;gap:12px;padding:16px 14px;position:sticky;top:0;z-index:40;
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   background:linear-gradient(to bottom,rgba(10,10,15,.92),rgba(10,10,15,.55));border-bottom:1px solid var(--stroke)}
-.nav .inner{max-width:900px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}
-.nav a{color:var(--txt-dim);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--stroke);transition:color .2s}
-.nav a:hover{color:var(--txt)}
+.nav .inner{max-width:680px;margin:0 auto;width:100%;display:flex;align-items:center;gap:12px}
+.nav a{color:var(--txt-dim);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--stroke)}
 .nav h1{flex:1;font-size:18px;font-weight:700;margin:0}
-.nav .sync{border:none;background:linear-gradient(90deg,#7c5cff,#22d3ee);color:#fff;padding:8px 16px;
-  border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-.nav .sync:active{transform:scale(.96)}
-
-/* overall progress */
-.overall{text-align:center;padding:26px 16px 10px}
-.overall .pct{font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;
+.overall{text-align:center;padding:24px 16px 8px}
+.overall .pct{font-size:40px;font-weight:800;font-variant-numeric:tabular-nums;
   background:linear-gradient(90deg,#7c5cff,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
-.overall .lbl{font-size:14px;color:var(--txt-dim);margin-top:2px}
-
-/* category filters */
-.filters{display:flex;gap:8px;overflow-x:auto;padding:10px 0 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.overall .lbl{font-size:13px;color:var(--txt-dim);margin-top:2px}
+.filters{display:flex;gap:7px;overflow-x:auto;padding:10px 0 14px;-webkit-overflow-scrolling:touch}
 .filters::-webkit-scrollbar{display:none}
-.fbtn{flex:none;scroll-snap-align:start;border:1px solid var(--stroke-hi);background:var(--surface);
-  color:var(--txt-dim);padding:7px 14px;border-radius:99px;font-size:12.5px;font-weight:600;
-  cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
-.fbtn.act{color:#fff;border-color:currentColor}
-
-/* grid */
-.grid{display:grid;grid-template-columns:1fr;gap:14px}
-@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
-
-/* card */
-.card{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--r);overflow:hidden;
-  transition:border-color .3s}
-.card.done{opacity:.7}
-.card-h{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;user-select:none}
-.card-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;text-transform:uppercase;letter-spacing:.04em;flex:none}
-.card-info{flex:1;min-width:0}
-.card-info b{display:block;font-size:14.5px;font-weight:650;line-height:1.3;white-space:normal}
-.card-info small{color:var(--txt-faint);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
-.card-ring{flex:none;width:56px;height:56px}
-.card-chev{color:var(--txt-faint);font-size:12px;flex:none;transition:transform .3s}
-.card.closed .card-chev{transform:rotate(-90deg)}
-.card-b{padding:4px 14px 14px}
-.card.closed .card-b{display:none}
-.card.done .card-badge{opacity:.6}
-
-/* KR rows */
-.kr{padding:12px 0;border-top:1px solid var(--stroke)}
-.kr:first-child{border-top:none}
-.kr-name{font-size:13.5px;font-weight:600;margin-bottom:8px;line-height:1.35}
-.kr-name .tag{font-size:10.5px;padding:2px 7px;border-radius:5px;margin-right:6px;font-weight:700;vertical-align:1px}
-/* progress bar */
-.pbar{height:7px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:8px}
+.fbtn{flex:none;border:1px solid var(--stroke-hi);background:var(--surface);color:var(--txt-dim);
+  padding:6px 13px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.fbtn.act{color:#fff}
+/* category block */
+.catblock{margin:16px 0 24px}
+.cathead{display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;user-select:none}
+.cathead .cic{font-size:18px}.cathead b{font-size:16px;font-weight:700;flex:1}
+.cathead .cpct{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.cathead .chev{color:var(--txt-faint);font-size:12px;transition:transform .3s}
+.catblock.closed .cathead .chev{transform:rotate(-90deg)}
+.catblock.closed .catbody{display:none}
+/* objective */
+.obj{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--r);margin:10px 0;overflow:hidden}
+.obj-h{padding:14px 16px;cursor:pointer;user-select:none;display:flex;gap:12px;align-items:flex-start}
+.obj-h .onum{font-size:12px;font-weight:800;padding:3px 8px;border-radius:7px;flex:none;margin-top:2px}
+.obj-h .otxt{flex:1;font-size:14.5px;font-weight:600;line-height:1.35}
+.obj-h .opct{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;flex:none;margin-top:2px}
+.obj-h .ochev{color:var(--txt-faint);font-size:11px;flex:none;margin-top:4px;transition:transform .3s}
+.obj.closed .ochev{transform:rotate(-90deg)}
+.obj.closed .obj-b{display:none}
+.obj-b{padding:0 14px 14px}
+/* progress bar shared */
+.pbar{height:6px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:6px}
 .pbar-fill{height:100%;border-radius:99px;transition:width .4s cubic-bezier(.22,1,.36,1)}
-.kr-input{display:flex;align-items:center;gap:10px;margin-top:6px}
-.kr-input input[type=number]{width:90px;background:var(--bg2);border:1px solid var(--stroke-hi);color:var(--txt);
-  border-radius:9px;padding:8px 10px;font-size:14px;font-family:inherit;outline:none;text-align:center;font-variant-numeric:tabular-nums}
-.kr-input input:focus{border-color:#7c5cff}
-.kr-input .target{font-size:12px;color:var(--txt-faint);font-variant-numeric:tabular-nums}
-.kr-input input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:7px;border-radius:99px;
-  background:rgba(255,255,255,.08);outline:none}
-.kr-input input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
-  background:var(--txt);cursor:pointer;border:3px solid #7c5cff;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-/* status toggle */
-.status-seg{display:flex;background:var(--bg2);border-radius:10px;padding:3px;border:1px solid var(--stroke);flex-wrap:wrap;gap:2px}
-.status-seg button{border:none;background:none;color:var(--txt-faint);padding:7px 12px;border-radius:7px;
-  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;flex:1;min-width:0;white-space:nowrap}
-.status-seg button.s-ns.act{background:rgba(255,255,255,.08);color:var(--txt-dim)}
-.status-seg button.s-ip.act{background:rgba(251,191,36,.18);color:#fbbf24}
-.status-seg button.s-done.act{background:rgba(52,224,161,.15);color:#34e0a1}
-
-/* done badge */
-.done-mark{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#34e0a1;padding:4px 10px;
-  border-radius:7px;background:rgba(52,224,161,.1);margin-top:4px}
-
-/* submit bar */
+/* KR */
+.kr{border-top:1px solid var(--stroke);padding:12px 0 8px}
+.kr:first-child{border-top:none}
+.kr-head{display:flex;align-items:flex-start;gap:10px}
+.kr-tag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;flex:none;margin-top:2px}
+.kr-txt{flex:1;font-size:13.5px;line-height:1.4}
+.kr-pct{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;flex:none;margin-top:1px}
+.kr-slider{display:flex;align-items:center;gap:10px;margin-top:8px}
+.kr-slider input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;background:rgba(255,255,255,.08);outline:none}
+.kr-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--txt);cursor:pointer;border:3px solid #7c5cff;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+/* KT */
+.kt{padding:6px 0 4px 24px;position:relative}
+.kt::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;border-radius:2px;background:rgba(255,255,255,.06)}
+.kt-dot{position:absolute;left:5px;top:11px;width:8px;height:8px;border-radius:50%;border:2px solid var(--stroke-hi);background:var(--bg2);transition:all .2s}
+.kt-dot.done{background:#34e0a1;border-color:#34e0a1;box-shadow:0 0 8px rgba(52,224,161,.4)}
+.kt-txt{font-size:12.5px;color:var(--txt-dim);line-height:1.4;cursor:pointer;transition:color .2s;padding-left:6px}
+.kt-txt.done{color:var(--txt-faint);text-decoration:line-through}
+/* submit */
 .submitbar{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:12px 16px calc(12px + var(--sb));
   background:linear-gradient(to top,rgba(10,10,15,.98) 60%,transparent)}
-.submitbar .inner{max-width:900px;margin:0 auto}
-.sendbtn{width:100%;border:none;border-radius:15px;padding:16px;font-size:15.5px;font-weight:700;font-family:inherit;
-  cursor:pointer;color:#fff;background:linear-gradient(90deg,#7c5cff,#9d6bff);
-  box-shadow:0 8px 28px rgba(124,92,255,.4);transition:transform .12s,opacity .2s;
-  display:flex;align-items:center;justify-content:center;gap:9px}
-.sendbtn:active{transform:scale(.97)}
-.sendbtn.busy{opacity:.6;pointer-events:none}
-.sendbtn.ok{background:linear-gradient(90deg,#34e0a1,#2bc98f);box-shadow:0 8px 28px rgba(52,224,161,.4)}
-
+.submitbar .inner{max-width:680px;margin:0 auto}
+.sendbtn{width:100%;border:none;border-radius:15px;padding:16px;font-size:15px;font-weight:700;font-family:inherit;
+  cursor:pointer;color:#fff;background:linear-gradient(90deg,#7c5cff,#9d6bff);box-shadow:0 8px 28px rgba(124,92,255,.4);
+  transition:transform .12s,opacity .2s}
+.sendbtn:active{transform:scale(.97)}.sendbtn.busy{opacity:.6;pointer-events:none}
+.sendbtn.ok{background:linear-gradient(90deg,#34e0a1,#2bc98f)}
 .toast{position:fixed;bottom:calc(100px + var(--sb));left:50%;transform:translateX(-50%) translateY(20px);
   background:var(--bg2);border:1px solid var(--stroke-hi);color:var(--txt);padding:13px 20px;border-radius:13px;
   font-size:14px;z-index:90;opacity:0;transition:.3s;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="nav"><div class="inner">
-  <a href="index.html">← Трекер</a>
-  <h1>OKR Dashboard</h1>
-</div></div>
-
+<div class="nav"><div class="inner"><a href="index.html">← Трекер</a><h1>OKR Dashboard</h1></div></div>
 <div class="wrap">
   <div class="overall"><div class="pct" id="overallPct">0%</div><div class="lbl">загальний прогрес OKR</div></div>
   <div class="filters" id="filters"></div>
-  <div class="grid" id="grid"></div>
+  <div id="app"></div>
 </div>
-
 <div class="submitbar"><div class="inner">
-  <button class="sendbtn" id="sendBtn" onclick="syncOKR()">
-    <span id="sendTxt">Синхронізувати OKR → Google Sheets</span></button>
+  <button class="sendbtn" id="sendBtn" onclick="syncOKR()"><span id="sendTxt">Синхронізувати OKR → Google Sheets</span></button>
 </div></div>
 <div class="toast" id="toast"></div>
-
 <script>
-const KEY='okr_state_v1',HOOKKEY='routine_hook_v1';
-const CIRC=2*Math.PI*42;
+const SKEY='okr_v2',HOOKKEY='routine_hook_v1';
 
-/* ═══════════════ COLORS ═══════════════ */
-const C={
-  work:'#3b82f6',finance:'#10b981',edu:'#f59e0b',
-  eighteen:'#ec4899',health:'#ef4444',brand:'#8b5cf6',
-  rel:'#06b6d4',leisure:'#f97316'
-};
-
-/* ═══════════════ DATA MODEL ═══════════════ */
-/* t: n=number, c=count, p=percent, s=status */
 const DATA=[
-{cat:'РОБОТА',ck:'work',ic:'💼',obs:[
-  {id:'wq1',n:'Випробувальний термін ENKO',sub:'Q1 · завершено',done:true,krs:[
-    {id:'wq1k1',n:'Incoming Sugar: 0 скарг, закриті інтеграції',t:'s'},
-    {id:'wq1k2',n:'ГУЧНІ: 15 продажів пісень',t:'s'},
-    {id:'wq1k3',n:'Комерція: 50 зустрічей, 1M грн продажів',t:'s'},
-    {id:'wq1k4',n:'Чарівна пісня: 20 закритих угод',t:'s'},
-    {id:'wq1k5',n:'Feedback: позитивний від CEO та тім-ліда',t:'s'},
-    {id:'wq1k6',n:'Система: AI-асистенти в кожному проєкті',t:'s'}
+{'name:'РОБОТА | ЗАРОБІТОК',ck:'work',icon:'💼',color:'#3b82f6',obs:[
+  {text:'Успішно пройти випробувальний термін в ENKO, ставши автономним юнітом, який перевищує очікування та системно приносить результат (до 11.02.2026).',krs:[
+    {text:'KR1 (Incoming Sugar): 0 скарг; закриті інтеграції; задоволеність Каті (CEO); повністю описаний і працюючий скрипт/процес обробки вхідних.',kts:['Inbox Zero: Перевірка та відповідь на всі запити тричі на день (ранок/обід/вечір), щоб не втрачати "теплий" стан клієнта.','Follow-up Map: Створення простої сітки фоловапів (через 24г, 3 дні, 1 тиждень) для кожного вхідного ліда.','Status Sync: Раз на тиждень короткий чек-лист для Шугара про статус найважливіших запитів.']},
+    {text:'KR2 (Проект "ГУЧНІ"): 15 продажів пісень загалом (з них 5 - Ванька); сформована та сегментована база лідів.',kts:['Messaging A/B Test: Щотижневий аналіз: які фрази в листах викликають відповідь, а які ігноруються.','Human-to-Human (H2H): Додавання 1-2 персоналізованих речень у кожен "холодний" лист, що базуються на актуальних новинах або інтересах ліда.']},
+    {text:'KR3 (Комерція та Реклама): Проведено 50 зустрічей; 30 закритих інтеграцій; сумарний обсяг продажів від 1 000 000 грн.',kts:['Call-First Strategy: Пріоритет на призначення зуму/зустрічі замість довгого листування (дзвінок = швидший продаж).','Research Protocol: 10 хвилин перед кожним дзвінком на вивчення бренду/людини (щоб "якість знайомства" була 10/10).','Document hygiene: Оновлення бази лідів та статусів умов/договорів щовечора після завершення робочого дня.']},
+    {text:'KR4 (Акаунтинг "Чарівна пісня"): 20 закритих угод; підтвердження від керівництва, що ти повноцінно замінив попереднього менеджера + передані справи менеджеру.',kts:['Knowledge Transfer Doc: Вчасне заповнення таск менеджера та календарю.','Intro-Calls: Проведення коротких зустрічей-передач справ, щоб менеджерка відчула твою підтримку.']},
+    {text:'KR5 (Feedback): Отримання прямого позитивного фідбеку від Тім-ліда та CEO за результатами періоду.',kts:['Monthly Review: Самостійний запит на фідбек за 2 тижні до фіналу випробувального терміну ("Як я можу посилити результат до 11 лютого?").','Evidence of Value: Збір короткого звіту про твої перемоги (цифри, закриті кейси) для фінальної розмови з CEO.']},
+    {text:'KR6 (Система): Впровадження AI-асистентів у кожен робочий проєкт; відсутність конфліктів у тайм-менеджменті між різними напрямками.',kts:['Sunday Planning: 60 хвилин щонеділі на планування наступного тижня з урахуванням навчання в коледжі.','AI Integration: Налаштування та тестування 2-3 AI-інструментів для автоматизації рутини (генерація відповідей, резюмування дзвінків).']},
   ]},
-  {id:'wy1',n:'ТОП-менеджер: фінансовий результат та нетворкінг',sub:'yearly',krs:[
-    {id:'wy1k1',n:'Financial Peak: закриті угоди',t:'n',tg:1000000,u:'грн/міс'},
-    {id:'wy1k2',n:'Networking: CRM + 2 зустрічі/тиждень',t:'s'},
-    {id:'wy1k3',n:'Industry Guidebook: чек-листи дистрибуції, АП, маркетингу',t:'s'},
-    {id:'wy1k4',n:'Multi-Project Flow: 80% рутини автоматизовано',t:'p'},
-    {id:'wy1k5',n:'Expert Brand: портфоліо кейсів за рік',t:'s'}
-  ]}
+  {text:'Сформувати статус ТОП-менеджера через фінансовий результат, системний нетворкінг та побудову власної бази знань індустрії.',krs:[
+    {text:'KR1 (Financial Peak): Вийти на стабільний показник закритих угод від 1 000 000 грн/місяць, забезпечивши собі максимальний бонусний дохід для реалізації фінансових цілей (подорожі, авто, автономія).',kts:['Pricing Master: Створити та щомісяця оновлювати порівняльну таблицю ціноутворення артистів на ринку (бенчмаркінг), щоб твої пропозиції завжди були обґрунтованими та конкурентними.','": **Big Fish****"**** Hunting:** Щотижня виділяти 4 години на пошук та розробку стратегій для великих колаборацій (бренди/артисти), які можуть закрити 50% твого фінансового плану однією угодою.']},
+    {text:'KR2 (Networking System): Впровадити та вести особисту базу контактів (CRM або Notion), де зафіксовано 100% нових знайомств; проводити мінімум 2 нетворкінг-зустрічі (Zoom/очно) на тиждень для розширення особистого впливу.',kts:['Notion CRM Setup: Протягом першого місяця розгорнути таблицю для фіксації контактів (ім’я, сфера, дата останнього контакту, про що говорили).','Outreach Routine: Виділити в календарі "годину нетворкінгу" (наприклад, вівторок/четвер), щоб ініціювати знайомства в LinkedIn/Instagram та призначати ті самі 2 зуми на тиждень.']},
+    {text:'KR3 (Intellectual Capital): Створити персональний "Industry Guidebook", що включає детальні чек-листи з дистрибуції, авторського права, маркетингу та продажів. Протестувати ці механіки на власному музичному кейсі.',kts:['Department Deep-Dives: Раз на два тижні ініціювати 30-хвилинний зум або каву з представниками різних департаментів (юристи, дистрибуція, маркетинг) з конкретним списком питань для твого Guidebook.','Self-Testing: Застосовувати одну нову вивчену механіку (наприклад, з авторського права чи маркетингу) до свого музичного проєкту та фіксувати результат як "Case Study" у гайді.']},
+    {text:'KR4 (Multi-Project Flow): Розробити та впровадити систему тайм-менеджменту для паралельного керування 4 проєктами (без втрати якості в жодному), де 80% рутини автоматизовано через AI, а графік синхронізовано з біоритмами та навчанням у коледжі.',kts:['AI Customization: Створити 4 кастомних GPT-асистенти (або боти), навчених на специфіці кожного з твоїх проєктів (контекст, база лідів, tone of voice).','Biorhythm Calendar: Синхронізувати Google-календар так, щоб найскладніші задачі (коледж, стратегія) припадали на твій пік енергії, а рутина та "боти" — на періоди спаду.']},
+    {text:'KR5 (Expert Brand): Сформувати чітке портфоліо реалізованих кейсів за рік (цифри, відгуки, успішні релізи), яке підтверджує твою експертність як автономного гравця.',kts:['Quarterly Review: В останню неділю кожного кварталу проводити "інвентаризацію" перемог. Записувати цифри, збирати скріни позитивних фідбеків від клієнтів/керівництва у документ "Ilia’s Portfolio".','Public Evidence: Раз на квартал готувати короткий пост чи звіт про один успішний кейс (без розголошення конфіденційної інфи), щоб твій професійний бренд ріс органічн']},
+  ]},
+  {text:'Побудувати стійку систему накопичень через "каскадний метод" депозитів та диверсифікацію активів (до 01.09.2026).',krs:[
+    {text:'KR1 (Гривневий фундамент): До квітня 2026 року відкрити та наповнити 3 гривневі депозити по 19 000 грн кожен (сумарно 57 000 грн).',kts:['Bank Setup: Відкрити в банківському додатку 3 окремі "банки" або короткострокові депозити (3 міс) з назвами "Гривневий резерв 1, 2, 3".','Hard Transfer: Встановити правило: протягом 1 години після зарахування ЗП переказувати 19 000 грн на поточний активний депозит.','Interest Reinvestment: Налаштувати автоматичну капіталізацію відсотків (додавання їх до суми депозиту), щоб працював складний відсоток.']},
+    {text:'KR2 (Валютна диверсифікація): Протягом травня–серпня 2026 року конвертувати 76 000 грн у валютні депозити (USD/EUR), забезпечивши захист від інфляції.',kts:['Currency Deposit Tool: Використовувати інструмент "валютний депозит" (купівля валюти за офіційним курсом банку з розміщенням на 3 місяці) — це вигідніше, ніж купувати готівку.','USD/EUR Split: У травні-червні купувати USD (на подушку безпеки), у липні-серпні — EUR (на подорож за кордон).','Rate Alert: Налаштувати в банку сповіщення про зміну курсу, щоб за необхідності змінити день конвертації на вигідніший.']},
+    {text:'KR3 (Пенсійний старт): Здійснити 8 регулярних платежів по 1 000 грн до НПФ, заклавши фундамент довгострокового капіталу.',kts:['Standing Order: Налаштувати в банку функцію "Регулярний платіж" на 1000 грн кожного 1-го числа місяця. Забути про цей процес — він має стати фоновим.']},
+    {text:'KR4 (Цільовий розподіл): Мати чіткий розподіл накопиченого капіталу на 01.09: Подушка безпеки: 60 000 грн. Фонд 18-річчя та подорожі: 60 000 грн. Фонд навчання водінню: 20 000 грн. Вільний капітал/Резерв: 20 000 грн.',kts:['Financial Dashboard: Створити просту таблицю в Notion або Google Sheets, де раз на місяць (після всіх платежів) фіксувати загальну суму в кожній категорії: "Подушка", "Подорож", "Водіння".','Travel Budgeting (Червень): Провести розрахунок вартості подорожі на 18-річчя (квитки, готель, витрати) та перевірити, чи вистачає накопичень у категорії "Фонд 18-річчя".','Driving School Audit (Серпень): Забронювати місце в автошколі та перевірити наявність 20 000 грн на окремому рахунку для оплати навчання у вересні.']},
+  ]},
 ]},
-{cat:'ФІНАНСИ',ck:'finance',ic:'💰',obs:[
-  {id:'fy1',n:'Каскадний метод депозитів та диверсифікація',sub:'до 01.09.2026',krs:[
-    {id:'fy1k1',n:'Гривневий фундамент: 3 депозити',t:'n',tg:57000,u:'грн'},
-    {id:'fy1k2',n:'Валютна диверсифікація',t:'n',tg:76000,u:'грн'},
-    {id:'fy1k3',n:'Пенсійний старт: платежі до НПФ',t:'c',tg:8,u:'платежів'},
-    {id:'fy1k4',n:'Цільовий розподіл капіталу на 01.09',t:'s'}
-  ]}
+{'name:'НАВЧАННЯ | ОСОБИСТИЙ РОЗВИТОК',ck:'edu',icon:'📚',color:'#f59e0b',obs:[
+  {text:'Забезпечити безперебійний навчальний процес у режимі мінімального втручання та максимальної стабільності в коледжі (3-4 курс).',krs:[
+    {text:'KR1 (Frictionless Communication): 0 конфліктів або зауважень від адміністрації та викладачів; репутація «спокійного, але стабільного студента».',kts:['Ввічливі та швидкі відповіді в чатах; повне ігнорування провокацій; формальний стиль спілкування.']},
+    {text:'KR2 (Academic Debt Zero): 100% атестацій закриті вчасно згідно з графіком (Лютий-Червень, Вересень-Грудень).',kts:['Аудит оцінок кожного 20-го числа; закриття всіх завдань одним блоком раз на місяць.']},
+    {text:'KR3 (Practice & Exams): Успішне проходження практики (лютий, грудень) та здача сесій без необхідності особистої присутності в «червоних зонах» уваги.',kts:['Завчасне підписання документів; переведення всіх екзаменів у дистанційний/письмовий формат.']},
+    {text:'KR4 (Efficiency): Використання AI для виконання 80% письмових робіт, щоб скоротити час на навчання до 5–7 годин на останній тиждень місяця.',kts:['Виконання 80% робіт через кастомний AI-бот; використання готових шаблонів для звітів.']},
+  ]},
+  {text:'Успішно пройти НМТ у режимі «енергозбереження» з результатом 175+ (травень - червень)',krs:[
+    {text:'KR1 (Результат): Отримання 175+ балів з математики, історії, укр. мови та англійської.',kts:['Старт у березні; 3 години на тиждень (по 1 год на Математику, Історію, Мову); використання онлайн-тестів.']},
+    {text:'KR2 (Впевненість): Досягнення 90% успішності на пробних тестах за місяць до іспиту.',kts:['Збільшення навантаження до 4 годин на тиждень у травні; проходження повних імітацій НМТ раз на тиждень.']},
+  ]},
+  {text:'Отримати системні менеджерські знання через курс Артема Бородатюка для підвищення особистої ефективності та професійної капіталізації.',krs:[
+    {text:'KR1: 100% курсу пройдено до 31 березня 2026 року.',kts:[]},
+    {text:'KR2: Створена структурована база знань (Notion/Guidebook), готова для завантаження в AI-боти.',kts:[]},
+    {text:'KR3: Мінімум 5 конкретних методик управління впроваджено в роботу з проєктами ENKO.',kts:['Проходити по 3 уроки на тиждень (Пн, Ср, Пт) з обов’язковою фіксацією ключових тез.','Раз на тиждень обирати одну методику та адаптувати її під поточний робочий контекст.','Наприкінці кожного місяця структурувати накопичені нотатки у фінальний документ бази знань.']},
+  ]},
+  {text:'Здобути базову технічну компетентність у Logic Pro та FL Studio для повної автономії у створенні власного музичного продукту.',krs:[
+    {text:'KR1: Розуміння інтерфейсу, основних гарячих клавіш, мікшера та логіки роботи в обох DAW.',kts:[]},
+    {text:'KR2: Створено та збережено 10 музичних демок (скетчів), де застосовано вивчені технічні прийоми.',kts:['Знайти та відібрати структурований базовий курс або плейлист туторіалів для Logic Pro (vocal processing) та FL Studio (beatmaking).','Виділяти щотижня 2 години (наприклад, у неділю) на навчання: 1 година — теорія/курс, 1 година — негайна практика.','Кожного місяця фіксувати результат у вигляді 2–3 нових демо-заготовок у папку «Learning Demos».']},
+  ]},
+  {text:'Набути впевнених практичних навичок водіння на механіці та базових знань ПДР для повної готовності до офіційного складання іспитів. (до січня 2027)',krs:[
+    {text:'KR1: Повна впевненість у керуванні, відчуття габаритів та «злиття» з машиною до 15.09.2026.',kts:[]},
+    {text:'KR2: Стабільне проходження теоретичних тестів ПДР онлайн з результатом 18/20 або вище.',kts:['Проводити 1–3 практичні заняття з татом на тиждень (тривалістю 1+ година) на майданчиках/парковках, починаючи з березня.','Відпрацювати всі види паркування, маневри, повороти та екстрене гальмування до автоматизму.','Протягом літа раз на тиждень проходити онлайн-тести ПДР для закріплення бази.','Грудень 2026 записатися на теоретичний екзамен в січні 2027 та практичні заняття.']},
+  ]},
+  {text:'Побудувати фундаментальну базу кулінарних знань та навичок для забезпечення власного побутового комфорту та здоров\'я.',krs:[
+    {text:'KR1: Сформовано особистий «рецептурний чек-лист» з 15+ базових повноцінних страв (сніданки, обіди, вечері), які ти готуєш впевнено.',kts:[]},
+    {text:'KR2: Повне розуміння поєднання інгредієнтів, технік обробки продуктів (жарка, варка, запікання) та вміння складати кошик продуктів на тиждень до 15.09.2026.',kts:['Проводити «Кулінарний експеримент» раз на 1–2 тижні: готувати нову страву за туторіалами з YouTube або під керівництвом сім’ї.','Вести нотатку «Мій раціон» (Notion або телефон), куди записувати перевірені рецепти, час приготування та список продуктів для них.','Активно консультуватися з сімʼєю щодо «кухонних лайфхаків» (як обирати м’ясо/овочі, як зберігати продукти).']},
+  ]},
+  {text:'Побудувати систему «Life Ops» для автономного керування своїм здоров\'ям, фінансами та житловим простором.',krs:[
+    {text:'KR1 (Finance & Engineering): Розуміння циклу оплати комунальних послуг, зняття показників лічильників та логіки роботи електрощитка/водопостачання.',kts:[]},
+    {text:'KR2 (Health Literacy): Сформована «Базова аптечка» та знання основних груп ліків (знеболювальні, антисептики, сорбенти) та їх дії.',kts:[]},
+    {text:'KR3 (Domestic Care): Знання маркувань на одязі (як не зіпсувати речі при пранні) та базових засобів побутової хімії для різних поверхонь.',kts:[]},
+    {text:'KR4: Дізнатися про напругу електрику, фізику і так далі в побутовому житті.',kts:['Протягом лютого–березня разом із батьками пройти весь цикл: від зняття показників лічильників до оплати в додатку/кабінеті.','Разом із сім\'єю провести ревізію домашньої аптечки, розібратися, що для чого, і створити свій список «Must-have» ліків (з фокусом на діючу речовину).','Дізнатися, де в поточному житлі знаходяться головні крани перекриття води та електрощиток. Навчитися користуватися базовими інструментами (викрутка, фум-лента, тестер напруги).','Скласти міні-гайд (або завантажити в бот) значення символів на ярликах одягу, щоб автоматизувати процес прання. Дізнатися про фізику в побутовому житті.']},
+  ]},
+  {text:'Стати людиною з широким світоглядом, здатною підтримати інтелектуальну дискусію на будь-яку тему поза межами професійної діяльності.',krs:[
+    {text:'KR1 (Information Quality): Заміна 50% розважального контенту (соцмережі) на пізнавальний (Longreads, документальні фільми, лекції).',kts:['Щодня приділяти 20 хвилин вивченню теми, яка ніяк не пов\'язана з роботою (наприклад: як працює блокчейн, історія Одеси, будова двигуна внутрішнього згоряння, теорія ігор).','Підписатися на 3 якісних медіа або YouTube-канали про науку/історію/технології (наприклад: *Kurzgesagt, Veritasium, WAS* або подкасти про історію).','Щоразу, коли чуєш незрозумілий термін або посилання на подію від старших колег — не кивай головою, а записуй і ввечері приділи 5 хвилин, щоб розібратися.','Раз на тиждень дивитися 1 культовий фільм або читати 1 книгу, які вважаються «базою» для освіченої людини (класика кіно, біографії великих лідерів).']},
+  ]},
 ]},
-{cat:'НАВЧАННЯ',ck:'edu',ic:'📚',obs:[
-  {id:'ey1',n:'Коледж: стабільність 3-4 курс',sub:'yearly',krs:[
-    {id:'ey1k1',n:'Frictionless Communication: 0 конфліктів',t:'s'},
-    {id:'ey1k2',n:'Academic Debt Zero: 100% атестацій',t:'p'},
-    {id:'ey1k3',n:'Practice & Exams: практика та сесії',t:'s'},
-    {id:'ey1k4',n:'Efficiency: 80% робіт через AI',t:'p'}
+{'name:'МЕНІ 18',ck:'eighteen',icon:'🎂',color:'#ec4899',obs:[
+  {text:'Реалізувати експеримент «Перша автономія» та сформувати власний фонд мобільного житла.',krs:[
+    {text:'KR1 (Asset Accumulation): Придбано базовий комплект «Мобільного дому» (наприклад: якісне ліжко/матрац, робоче крісло, система зберігання), який відповідає твоїм стандартам комфорту.',kts:[]},
+    {text:'KR2 (The Test Drive): Успішно реалізовано кейс «1 місяць соло-життя» в орендованій квартирі в Одесі з повним самозабезпеченням (бюджет, їжа, комуналка).',kts:[]},
+    {text:'KR3 (Budget Audit): Проведено повний розрахунок «вартості автономії» на основі реального досвіду для планування переїзду на постійну основу.',kts:['Скласти список пріоритетних покупок (що саме «старе» бісить найбільше) та прицінитися до варіантів, які легко транспортувати.','Використати бонусну частину доходу для поступового викупу речей з КТ1, починаючи з вересня 2026.','У вересні-жовтні 2026 провести аналіз ринку оренди в Одесі та вибрати варіант для «тестового місяця».','Прожити 30 днів самостійно, ведучи щоденник витрат та часу, щоб зрозуміти, як це впливає на твою ефективність та життя.']},
   ]},
-  {id:'ey2',n:'НМТ: результат 175+',sub:'травень-червень',krs:[
-    {id:'ey2k1',n:'Результат НМТ',t:'n',tg:200,u:'балів'},
-    {id:'ey2k2',n:'90% на пробних тестах',t:'p'}
+  {text:'Повна актуалізація особистих документів згідно з законодавством України по досягненню 18 років.',krs:[
+    {text:'KR1 (ID-Card): Отримано оновлений паспорт (ID-картку) у листопаді 2026 року без затримок.',kts:[]},
+    {text:'KR2 (Military Status): Пройдено планову звірку в ТЦК, оновлено дані та отримано актуальний військово-обліковий документ із підтвердженою відстрочкою по навчанню.',kts:[]},
+    {text:'KR3 (Digital Identity): Всі оновлені документи відображаються в застосунку «Дія» та «Резерв+».',kts:['За місяць до 18-річчя (серпень) перевірити термін дії поточної ID-картки та записатися в чергу до ЦНАПу на листопад.','У вересні 2026 взяти в коледжі довідку про навчання (Форма-20) для ТЦК.','У жовтні 2026 (перед походом у ТЦК) проконсультуватися з юристом або батьками, щоб чітко знати алгоритм дій і не мати сюрпризів.','Сфотографувати та завантажити в захищене хмарне сховище всі нові документи.']},
   ]},
-  {id:'ey3',n:'Курс Бородатюка: менеджерські знання',sub:'до 31.03.2026',krs:[
-    {id:'ey3k1',n:'100% курсу пройдено',t:'p'},
-    {id:'ey3k2',n:'База знань (Notion/Guidebook)',t:'s'},
-    {id:'ey3k3',n:'Впроваджено методик в ENKO',t:'c',tg:5,u:'методик'}
-  ]},
-  {id:'ey4',n:'Logic Pro & FL Studio: автономія',sub:'yearly',krs:[
-    {id:'ey4k1',n:'Розуміння інтерфейсу обох DAW',t:'s'},
-    {id:'ey4k2',n:'Створено демок',t:'c',tg:10,u:'демок'}
-  ]},
-  {id:'ey5',n:'Водіння: практика на механіці',sub:'до січня 2027',krs:[
-    {id:'ey5k1',n:'Впевненість у керуванні',t:'s'},
-    {id:'ey5k2',n:'Тести ПДР: результат з 20',t:'n',tg:20,u:'/20'}
-  ]},
-  {id:'ey6',n:'Кулінарія: базові навички',sub:'yearly',krs:[
-    {id:'ey6k1',n:'Рецептурний чек-лист',t:'c',tg:15,u:'страв'},
-    {id:'ey6k2',n:'Розуміння інгредієнтів та технік',t:'s'}
-  ]},
-  {id:'ey7',n:'Life Ops: здоровʼя, фінанси, побут',sub:'yearly',krs:[
-    {id:'ey7k1',n:'Finance & Engineering: комуналка, лічильники',t:'s'},
-    {id:'ey7k2',n:'Health Literacy: базова аптечка',t:'s'},
-    {id:'ey7k3',n:'Domestic Care: маркування одягу',t:'s'},
-    {id:'ey7k4',n:'Електрика та фізика в побуті',t:'s'}
-  ]},
-  {id:'ey8',n:'Широкий світогляд',sub:'yearly',krs:[
-    {id:'ey8k1',n:'Заміна 50% контенту на пізнавальний',t:'p'}
-  ]}
 ]},
-{cat:'МЕНІ 18',ck:'eighteen',ic:'🎂',obs:[
-  {id:'a1',n:'Перша автономія: соло-життя',sub:'yearly',krs:[
-    {id:'a1k1',n:'Мобільний дім: базовий комплект',t:'s'},
-    {id:'a1k2',n:'Test Drive: 1 місяць соло',t:'s'},
-    {id:'a1k3',n:'Budget Audit: розрахунок вартості',t:'s'}
+{'name:'ЗДОРОВ\'Я',ck:'health',icon:'🏥',color:'#ef4444',obs:[
+  {text:'Перетворити фізичну активність на стабільну систему підтримки життєдіяльності та досягти прогресу в силових показниках і формі тіла (наростити масу).',krs:[
+    {text:'KR1 (Consistency): Стабільне відвідування залу 2–3 рази на тиждень (мінімум 10 тренувань на місяць).',kts:[]},
+    {text:'KR2 (Data Literacy): 100% заповнення таблиці метрик (вага, робоча вага в залі, самопочуття) після кожного тренування.',kts:[]},
+    {text:'KR3 (Daily Motion): Виконання норми «мінімальної активності» — 15 хвилин прогулянки на вулиці щодня (незалежно від погоди).',kts:[]},
+    {text:'KR4 (Visual Progress): Фіксація позитивних змін у дзеркалі та суб\'єктивне відчуття «енергії на 8/10» до кінця першого кварталу.',kts:['Використовувати 15-хвилинну прогулянку як «перемикач» режимів (наприклад, між коледжем і роботою або як частину «Основи ранку»).','Впровадити правило: якщо енергія на 3/10 — замінити важке тренування на легку розтяжку або басейн, але прийти в зал (збереження звички).']},
   ]},
-  {id:'a2',n:'Документи по 18 років',sub:'листопад 2026',krs:[
-    {id:'a2k1',n:'ID-Card: оновлений паспорт',t:'s'},
-    {id:'a2k2',n:'Military Status: звірка в ТЦК',t:'s'},
-    {id:'a2k3',n:'Digital Identity: Дія та Резерв+',t:'s'}
-  ]}
+  {text:'Побудувати систему харчування, яка забезпечує стабільний набір маси (0.5–1 кг на місяць) без втрати якості енергії та здоров\'я шкіри.',krs:[
+    {text:'KR1 (Weight Trend): Досягнуто стабільного приросту ваги [+2 кг] до кінця першого кварталу.',kts:[]},
+    {text:'KR2 (Protein Target): Щоденне споживання білка на рівні 1.6–1.8 г на кг ваги тіла (фундамент для м\'язів).',kts:[]},
+    {text:'KR3 (Consistency): 3 основні прийоми їжі + 1-2 висококалорійні перекуси (горіхи, протеїн, фрукти) щодня.',kts:[]},
+    {text:'KR4 (Clean Fuel): Мінімізація доданого цукру та трансжирів до <10% від раціону (для чистої шкіри та стабільного фокусу).',kts:[]},
+    {text:'KR5 (Vitamins): Пити щоденно вітаміни та підтримувати стан.',kts:['Додати до кожного прийому їжі «корисні жири» (авокадо, олія, горіхи) — це найлегший спосіб підняти калорійність, не збільшуючи об\'єм тарілки.','Визначити 5-7 стандартних страв, які ти любиш і які відповідають цілі (наприклад: каша + м\'ясо/риба + овочі), щоб не думати «що з\'їсти» в розпал робочого дня.','Якщо не встигаєш добирати калорії — додати якісний протеїновий коктейль або гейнер на основі складних вуглеводів (після консультації, якщо потрібно) + вітаміни.']},
+  ]},
+  {text:'Побудувати стабільну звичку споживання води для максимізації клітинної регенерації та підтримки чистоти шкіри.',krs:[
+    {text:'KR1 (Volume): Стабільне споживання 1.5 – 2 літрів чистої води щодня (без урахування чаю/кави).',kts:[]},
+    {text:'KR2 (Skin Quality): Суб\'єктивне зменшення запалень та покращення тонусу шкіри (ефект «сяяння») до кінця Q1.',kts:[]},
+    {text:'KR3 (Morning Routine): 100% виконання правила «перша склянка води (300-500 мл) одразу після пробудження».',kts:['Тримати велику пляшку або графин з водою безпосередньо на робочому столі біля комп\'ютера. Якщо вода перед очима — мозок п\'є її автоматично.','Впровадити ритуал: замовляєш каву — одразу випиваєш склянку води.','Якщо чиста вода «не лізе», додавай лимон, м’яту або огірок — це покращує смак і додає мінімальну кількість електролітів для детоксу.','На початковому етапі (2-3 тижні) використовувати трекер води або прості відмітки в Notion, щоб зафіксувати звичку в нейронних мережах.']},
+  ]},
+  {text:'Побудувати систему регулярного медичного контролю.',krs:[
+    {text:'KR1 (Diagnostics): Пройдено базовий комплексний чекап (аналізи крові: вітаміни, гормони, мікроелементи + стоматолог + зір) до кінця Q1.',kts:[]},
+    {text:'KR2 (Diagnostics): Пройдено базовий комплексний чекап (аналізи крові: вітаміни, гормони, мікроелементи + стоматолог) до кінця Q4.',kts:['Сформувати список необхідних аналізів (Біохімія, Вітамін D, B12, Ферритин, ТТГ) — це те, що найчастіше впливає на енергію.','Записатися до стоматолога на огляд та чистку вже в поточному кварталі (це найпростіший старт).','Після отримання результатів аналізів проконсультуватися з фахівцем (нутріціологом/терапевтом) для корекції раціону чи прийому вітамінів.','Зберігати всі результати в окремій папці (цифровій або фізичній), щоб відстежувати динаміку здоров\'я з роками.']},
+  ]},
+  {text:'Досягти стану стійкої ремісії хронічного тонзиліту, запобігаючи загостренням протягом усього року.',krs:[
+    {text:'KR1 (Zero Flare-ups): Відсутність гострих станів (ангін із температурою) протягом 2026 року.',kts:[]},
+    {text:'KR2 (Visual Control): Відсутність гнійних пробок у мигдалинах та зменшення їхнього набряку (контролюється тобою та ЛОР-лікарем).',kts:['Впровадити ритуал «Ранкове зрошення»: полоскання горла звичайною водою кімнатної температури або слабким сольовим розчином після чищення зубів.','Уникати екстремально холодних напоїв у періоди високого стресу (кортизол знижує імунітет, і холод стає тригером).','Записатися до ЛОРа на профілактичний огляд у Q1, щоб оцінити стан і призначити промивання.','Підтримувати вологість у кімнаті (особливо під час сну) та пити достатньо води (твій OKR по воді прямо допомагає горлу).']},
+  ]},
+  {text:'Побудувати стійку систему енергоменеджменту для переходу з режиму «виживання» (6/10) у режим «пікової продуктивності» (8-9/10).',krs:[
+    {text:'KR1 (Energy Metric): Підняти суб\'єктивний рівень ранкової енергії до стабільних 8/10 до кінця березня 2026 року.',kts:[]},
+    {text:'KR2 (Digital Boundaries): 100% дотримання правила «Цифрової комендантської години»: жодних робочих чатів за 1 годину до сну та 30 хв після пробудження.',kts:[]},
+    {text:'KR3 (Systemic Rest): Мати мінімум 1 повний вихідний на тиждень (Digital Detox Day), де повністю відсутні робочі та навчальні завдання.',kts:['робити щоденні рефлексії.','Внести в календар блоки «глухої оборони» (Deep Work/Rest) по 30-60 хв, коли телефон у режимі «Не турбувати».','Кожного вихідного пробувати новий вид відпочинку (не екранний!): прогулянка без навушників, басейн, малювання, сон вдень, спілкування з друзями не про роботу.','Впровадити правило «5 хвилин тиші» між перемиканнями з одного проєкту на інший (наприклад, між ENKO та коледжем).']},
+  ]},
+  {text:'Досягти стану внутрішнього спокою та впевненості, мінімізувавши вплив зовнішніх стресорів на продуктивність і сон.',krs:[
+    {text:'KR1 (Self-Assessment): Зниження рівня суб\'єктивної тривожності з «постійної» до «контрольованої» (самооцінка спокою на 8/10).',kts:[]},
+    {text:'KR2 (Crisis Management): Опанування та успішне застосування 2-3 технік швидкого зняття гострого стресу (наприклад, дихання за квадратом або техніка «5-4-3-2-1»).',kts:['Впровадити ритуал «3 хвилини тиші» (дихання) після завершення робочого дня в ENKO перед тим, як переходити до особистих справ.','Щовечора виписувати в нотатки 3 «перемоги дня» або просто всі тривожні думки (Brain Dump), щоб «вивантажити» їх із голови перед сном.','Уникати кави (діуретик та стимулятор тривоги) у другій половині дня, замінюючи її водою (твій OKR по воді) або трав\'яним чаєм.','Під час нападів тривоги використовувати фізичну дію: вмивання холодною водою, коротка розминка або прогулянка (твій KT по ходьбі).','Якщо рівень тривоги не знижується протягом місяця — звернутися до психолога для аудиту твоїх внутрішніх налаштувань.']},
+  ]},
 ]},
-{cat:'ЗДОРОВ\'Я',ck:'health',ic:'🏥',obs:[
-  {id:'h1',n:'Фізична активність: система',sub:'yearly',krs:[
-    {id:'h1k1',n:'Consistency: тренувань/місяць',t:'c',tg:10,u:'тренувань'},
-    {id:'h1k2',n:'Data Literacy: заповнення метрик',t:'p'},
-    {id:'h1k3',n:'Daily Motion: 15 хв прогулянки щодня',t:'p'},
-    {id:'h1k4',n:'Visual Progress: енергія',t:'n',tg:10,u:'/10'}
+{'name:'МІЙ БРЕНД',ck:'brand',icon:'🎨',color:'#8b5cf6',obs:[
+  {text:'Сформувати стабільну медіа-присутність, яка транслює твої цінності, професіоналізм та творчий процес.',krs:[
+    {text:'KR1 (Consistency): Регулярна публікація контенту: 2–3 TikTok/Reels на тиждень та щоденні сторіз (мінімум 3–5 сенсових кадрів).',kts:[]},
+    {text:'KR2 (Aesthetic Tone): Сформовано візуальний стиль (Tone of Voice, кольорова гама, мінімалістичний монтаж), який відповідає твоїй екосистемі.',kts:[]},
+    {text:'KR3 (Engagement & Growth): Отримання першого вірального охоплення та залучення аудиторії, яка цікавиться музикою та менеджментом.',kts:[]},
+    {text:'KR4 (Authenticity): Впровадження формату «Daily Log» — чесна рефлексія про твої перемоги та факапи на шляху до 18 років.',kts:['Визначити 3 основні лінії контенту: 1) «Work Mode» (менеджмент, ENKO, AI), 2) «Creative Flow» (музика, Logic Pro, демо), 3) «Life Upgrade» (водіння, готування, переїзд).','Виділити 2 години в суботу або неділю на зйомку та монтаж пачки відео (batch creation), щоб не витрачати ресурс у робочі будні.','Створити мудборд у Pinterest для орієнтира на естетику кадру (світло, ракурс, деталі).','Навчитися знімати «живі» моменти протягом дня (15-секундні кадри робочого місця, прогулянки, процесу запису), щоб мати базу для монтажу.']},
   ]},
-  {id:'h2',n:'Харчування: набір маси +0.5-1 кг/міс',sub:'yearly',krs:[
-    {id:'h2k1',n:'Weight Trend: приріст ваги',t:'n',tg:2,u:'кг'},
-    {id:'h2k2',n:'Protein Target: 1.6-1.8 г/кг',t:'s'},
-    {id:'h2k3',n:'3 прийоми їжі + перекуси',t:'p'},
-    {id:'h2k4',n:'Clean Fuel: цукор <10%',t:'s'},
-    {id:'h2k5',n:'Vitamins: щоденно',t:'p'}
-  ]},
-  {id:'h3',n:'Вода: 1.5-2 л щодня',sub:'yearly',krs:[
-    {id:'h3k1',n:'Volume: стабільне споживання',t:'p'},
-    {id:'h3k2',n:'Skin Quality: зменшення запалень',t:'s'},
-    {id:'h3k3',n:'Morning Routine: перша склянка',t:'p'}
-  ]},
-  {id:'h4',n:'Медичний контроль',sub:'yearly',krs:[
-    {id:'h4k1',n:'Q1 чекап: кров, стоматолог, зір',t:'s'},
-    {id:'h4k2',n:'Q4 чекап: повторний',t:'s'}
-  ]},
-  {id:'h5',n:'Тонзиліт: стійка ремісія',sub:'yearly',krs:[
-    {id:'h5k1',n:'Zero Flare-ups: 0 ангін за рік',t:'s'},
-    {id:'h5k2',n:'Visual Control: без набряку',t:'s'}
-  ]},
-  {id:'h6',n:'Енергоменеджмент: 8-9/10',sub:'yearly',krs:[
-    {id:'h6k1',n:'Energy Metric: ранкова енергія',t:'n',tg:10,u:'/10'},
-    {id:'h6k2',n:'Digital Boundaries: цифровий комендант',t:'p'},
-    {id:'h6k3',n:'Systemic Rest: 1 вихідний/тиждень',t:'p'}
-  ]},
-  {id:'h7',n:'Внутрішній спокій та впевненість',sub:'yearly',krs:[
-    {id:'h7k1',n:'Self-Assessment: спокій',t:'n',tg:10,u:'/10'},
-    {id:'h7k2',n:'Crisis Management: техніки стресу',t:'c',tg:3,u:'технік'}
-  ]}
 ]},
-{cat:'МІЙ БРЕНД',ck:'brand',ic:'🎨',obs:[
-  {id:'b1',n:'Медіа-присутність та контент',sub:'yearly',krs:[
-    {id:'b1k1',n:'Consistency: 2-3 TikTok/Reels на тиждень',t:'s'},
-    {id:'b1k2',n:'Aesthetic Tone: візуальний стиль',t:'s'},
-    {id:'b1k3',n:'Engagement: перше віральне охоплення',t:'s'},
-    {id:'b1k4',n:'Daily Log: чесна рефлексія',t:'s'}
-  ]}
-]},
-{cat:'ВІДНОСИНИ',ck:'rel',ic:'💬',obs:[
-  {id:'r1',n:'Соціальні взаємодії: легкість та автентичність',sub:'yearly',krs:[
-    {id:'r1k1',n:'Quality Sorting: 0 часу на токсичних',t:'s'},
-    {id:'r1k2',n:'Random Joy: спонтанні знайомства',t:'s'},
-    {id:'r1k3',n:'Needs Fulfillment: за власним ритмом',t:'s'}
+{'name:'ВІДНОСИНИ',ck:'rel',icon:'💬',color:'#06b6d4',obs:[
+  {text:'Побудувати автентичну та легку систему соціальних взаємодій, де пріоритетом є особисте задоволення та емоційний комфорт.',krs:[
+    {text:'KR1 (Quality Sorting): Сформовано навик миттєвої селекції: 0 витраченого часу на токсичних людей або «порожнє» спілкування.',kts:[]},
+    {text:'KR2 (Random Joy): Отримання задоволення від спонтанних зустрічей та знайомств без спроб зазирнути в майбутнє.',kts:[]},
+    {text:'KR3 (Needs Fulfillment): Реалізація романтичних та сексуальних запитів (hookups) згідно з власним ритмом та внутрішнім бажанням, зберігаючи чесність і безпеку.',kts:['Завершувати спілкування одразу, як тільки відчуваєш дискомфорт або нудьгу, не пояснюючи причини собі чи іншим (радикальна чесність).','Бути відкритим до знайомств у залі, на робочих івентах чи в місті, сприймаючи кожну людину як цікавий короткий досвід.','Чітко артикулювати свої наміри партнерам, щоб зберігати формат «легкості» та уникати непорозумінь.','Раз на місяць питати себе: «Чи ці люди в моєму оточенні роблять моє життя кращим/цікавішим?».']},
   ]},
-  {id:'r2',n:'Сімʼя: взаємна повага до кордонів',sub:'yearly',krs:[
-    {id:'r2k1',n:'Dependency Reduction: 100% автономність',t:'p'},
-    {id:'r2k2',n:'Information Filter: коректна дистанція',t:'s'},
-    {id:'r2k3',n:'Moral Readiness: сімʼя готова до переїзду',t:'s'}
-  ]}
+  {text:'Трансформувати сімейні стосунки у формат взаємної поваги до кордонів, мінімізувавши втручання в особистий простір.',krs:[
+    {text:'KR1 (Dependency Reduction): 100% автономність у базових питаннях (харчування, здоров\'я, логістика), що знімає з батьків роль «забезпечувачів».',kts:[]},
+    {text:'KR2 (Information Filter): Встановлення «коректної дистанції» — батьки знають лише ту інформацію про твою роботу та особисте життя, яку ти вважаєш за доцільне повідомити.',kts:[]},
+    {text:'KR3 (Moral Readiness): Сім\'я звикла до думки про твій переїзд і сприймає це як природний процес, а не як катастрофу.',kts:['Поступово перебирати на себе всі «дорослі» справи (від запису до лікаря до купівлі продуктів для себе), щоб вони бачили: ти справляєшся.','Відпрацювати ввічливі, але тверді фрази-відмови на спроби надмірного втручання: «Дякую за турботу, я вже вирішив це питання», «Я розповім про це пізніше, зараз мені потрібен фокус».','Чітко визначити свою територію (навіть якщо це частина кімнати) і час, коли тебе не можна турбувати (наприклад, під час роботи в Logic Pro чи дзвінків з ENKO).','Збільшувати час, проведений поза домом або в автономному режимі, щоб «привчити» систему до твоєї фізичної та емоційної відсутності.']},
+  ]},
 ]},
-{cat:'ВІДПОЧИНОК',ck:'leisure',ic:'✈️',obs:[
-  {id:'l1',n:'11 стратегічних подорожей',sub:'yearly',krs:[
-    {id:'l1k1',n:'Domestic Volume: поїздки Україною',t:'c',tg:10,u:'поїздок'},
-    {id:'l1k2',n:'Global Leap: закордонна подорож',t:'s'},
-    {id:'l1k3',n:'Budget Discipline',t:'n',tg:60000,u:'грн'},
-    {id:'l1k4',n:'Memory Assets: контент з поїздок',t:'s'}
-  ]}
-]}
+{'name:'ВІДПОЧИНОК ТА ДОЗВІЛЛЯ',ck:'leisure',icon:'✈️',color:'#f97316',obs:[
+  {text:'Розширити межі особистого простору через 11 стратегічних подорожей протягом року.',krs:[
+    {text:'KR1 (Domestic Volume): Здійснено 10 поїздок у різні куточки України.',kts:[]},
+    {text:'KR2 (Global Leap): Реалізовано 1 закордонну подорож (наприклад, Європа).',kts:[]},
+    {text:'KR3 (Budget Discipline): Всі поїздки реалізовані в межах ліміту «Фонду подорожей» (60 000 грн) + додаткові премії.',kts:[]},
+    {text:'KR4 (Memory Assets): Створено контент (фото/відео) з кожної поїздки для твого Персонального бренду (O в блоці Бренд).',kts:['У січні скласти «Wishlist 10 локацій України», які ти хочеш відвідати (від прихованих місць Одещини до великих хабів).','Планувати короткі поїздки (2-3 дні) Україною раз на 4-6 тижнів, синхронізуючи це з твоїм «Sunday Planning».','За 3 місяці до 18-річчя (серпень) вибрати країну, забронювати житло та квитки для закордонної поїздки.','Завжди брати з собою мінімальний набір для роботи (MacBook + навушники), щоб подорож не гальмувала проєкти.']},
+  ]},
+]},
 ];
 
-/* ═══════════════ STATE ═══════════════ */
-function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
-let ST=loadState();
-function saveState(){localStorage.setItem(KEY,JSON.stringify(ST))}
-function getVal(id,kr){
-  if(ST[id]!==undefined)return ST[id];
-  // defaults for completed Q1
-  const cat=DATA.find(d=>d.obs.some(o=>o.id===id?.split('k')[0]?.replace(/k\d+$/,'')));
-  if(kr.t==='s')return 'not_started';
-  return 0;
-}
-function setVal(id,v){ST[id]=v;saveState();renderAll()}
+/* ═══════ STATE ═══════ */
+/* State: { 'cat_obj_kr': percent 0-100, 'cat_obj_kr_kt': bool } */
+let ST; try{ST=JSON.parse(localStorage.getItem(SKEY))||{}}catch(e){ST={}}
+function saveState(){localStorage.setItem(SKEY,JSON.stringify(ST))}
+function uid(ci,oi,ki,ti){return ci+'_'+oi+'_'+ki+(ti!==undefined?'_'+ti:'')}
 
-/* ═══════════════ PROGRESS CALC ═══════════════ */
-function krProgress(kr){
-  const v=ST[kr.id];
-  if(kr.t==='s'){
-    if(v==='achieved')return 1;if(v==='in_progress')return 0.5;return 0;
-  }
-  if(kr.t==='p')return Math.min((v||0)/100,1);
-  if(kr.t==='n'||kr.t==='c'){
-    if(!kr.tg)return v?1:0;
-    return Math.min((v||0)/kr.tg,1);
-  }
-  return 0;
-}
-function objProgress(obj){
-  if(obj.done)return 1;
-  if(!obj.krs.length)return 0;
-  return obj.krs.reduce((s,kr)=>s+krProgress(kr),0)/obj.krs.length;
-}
-function catProgress(cat){
-  const progs=cat.obs.map(o=>objProgress(o));
-  return progs.length?progs.reduce((a,b)=>a+b,0)/progs.length:0;
-}
-function overallProgress(){
-  const progs=DATA.map(d=>catProgress(d));
-  return progs.length?progs.reduce((a,b)=>a+b,0)/progs.length:0;
-}
+function krVal(ci,oi,ki){return ST[uid(ci,oi,ki)]||0}
+function ktDone(ci,oi,ki,ti){return!!ST[uid(ci,oi,ki,ti)]}
+function setKr(ci,oi,ki,v){ST[uid(ci,oi,ki)]=v;saveState();renderAll()}
+function toggleKt(ci,oi,ki,ti){const k=uid(ci,oi,ki,ti);ST[k]=!ST[k];saveState();renderAll()}
 
-/* ═══════════════ SVG RING ═══════════════ */
-function ring(pct,color,size=56){
-  const off=CIRC*(1-pct);
-  const p=Math.round(pct*100);
-  return`<svg viewBox="0 0 100 100" width="${size}" height="${size}">
-    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="7"/>
-    <circle cx="50" cy="50" r="42" fill="none" stroke="${color}" stroke-width="7"
-      stroke-dasharray="${CIRC}" stroke-dashoffset="${off}" transform="rotate(-90 50 50)"
-      stroke-linecap="round" style="transition:stroke-dashoffset .6s"/>
-    <text x="50" y="50" text-anchor="middle" dy=".35em" fill="${color}" font-size="20" font-weight="700">${p}</text>
-  </svg>`;
-}
+/* ═══════ PROGRESS ═══════ */
+function objPct(ci,oi){
+  const obj=DATA[ci].obs[oi]; if(!obj.krs.length)return 0;
+  return Math.round(obj.krs.reduce((s,_,ki)=>s+krVal(ci,oi,ki),0)/obj.krs.length)}
+function catPct(ci){
+  const cat=DATA[ci];if(!cat.obs.length)return 0;
+  return Math.round(cat.obs.reduce((s,_,oi)=>s+objPct(ci,oi),0)/cat.obs.length)}
+function totalPct(){
+  if(!DATA.length)return 0;
+  return Math.round(DATA.reduce((s,_,ci)=>s+catPct(ci),0)/DATA.length)}
 
-/* ═══════════════ RENDER ═══════════════ */
+/* ═══════ RENDER ═══════ */
 let activeFilter='all';
-let closedCards={};
-
-function renderFilters(){
-  const el=document.getElementById('filters');
-  let h=`<div class="fbtn ${activeFilter==='all'?'act':''}" style="${activeFilter==='all'?'color:#7c5cff;border-color:#7c5cff':''}" onclick="setFilter('all')">Всі</div>`;
-  DATA.forEach(d=>{
-    const act=activeFilter===d.ck;
-    h+=`<div class="fbtn ${act?'act':''}" style="${act?'color:'+C[d.ck]+';border-color:'+C[d.ck]:''}" onclick="setFilter('${d.ck}')">${d.ic} ${d.cat}</div>`;
-  });
-  el.innerHTML=h;
-}
-function setFilter(f){activeFilter=f;renderAll()}
-
-function renderKR(kr,color,isDone){
-  const v=ST[kr.id];
-  let input='';
-  if(isDone){
-    return`<div class="kr"><div class="kr-name">${kr.n}</div><div class="done-mark">✓ Досягнуто</div></div>`;
-  }
-  if(kr.t==='s'){
-    const cur=v||'not_started';
-    input=`<div class="status-seg">
-      <button class="s-ns ${cur==='not_started'?'act':''}" onclick="setVal('${kr.id}','not_started')">Не розпочато</button>
-      <button class="s-ip ${cur==='in_progress'?'act':''}" onclick="setVal('${kr.id}','in_progress')">В процесі</button>
-      <button class="s-done ${cur==='achieved'?'act':''}" onclick="setVal('${kr.id}','achieved')">Досягнуто</button>
-    </div>`;
-  } else if(kr.t==='p'){
-    const cv=v||0;
-    input=`<div class="kr-input"><input type="range" min="0" max="100" value="${cv}" oninput="setVal('${kr.id}',+this.value)"/>
-      <span class="target" style="color:${color};min-width:36px;text-align:right">${cv}%</span></div>
-      <div class="pbar"><div class="pbar-fill" style="width:${cv}%;background:${color}"></div></div>`;
-  } else if(kr.t==='n'){
-    const cv=v||0;const pct=kr.tg?Math.min(cv/kr.tg*100,100):0;
-    input=`<div class="kr-input"><input type="number" value="${cv||''}" placeholder="0" oninput="setVal('${kr.id}',+this.value)"/>
-      <span class="target">${kr.tg?'/ '+kr.tg.toLocaleString():''}${kr.u?' '+kr.u:''}</span></div>
-      ${kr.tg?`<div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div>`:''}`;
-  } else if(kr.t==='c'){
-    const cv=v||0;const pct=kr.tg?Math.min(cv/kr.tg*100,100):0;
-    input=`<div class="kr-input"><input type="number" min="0" max="${kr.tg||999}" value="${cv||''}" placeholder="0" oninput="setVal('${kr.id}',+this.value)"/>
-      <span class="target">/ ${kr.tg} ${kr.u||''}</span></div>
-      <div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div>`;
-  }
-  return`<div class="kr"><div class="kr-name"><span class="tag" style="background:${color}22;color:${color}">${kr.t==='s'?'СТАТУС':kr.t==='p'?'%':'ЧИСЛО'}</span>${kr.n}</div>${input}</div>`;
-}
-
-function renderCard(obj,cat){
-  const color=C[cat.ck];
-  const pct=objProgress(obj);
-  const closed=closedCards[obj.id]?'closed':'';
-  const doneClass=obj.done?'done':'';
-  const krsHtml=obj.krs.map(kr=>renderKR(kr,color,obj.done)).join('');
-  return`<div class="card ${closed} ${doneClass}" data-oid="${obj.id}" style="border-left:3px solid ${color}44">
-    <div class="card-h" onclick="toggleCard('${obj.id}')">
-      <div class="card-badge" style="background:${color}18;color:${color}">${cat.ic} ${cat.cat}</div>
-      <div class="card-info"><b>${obj.n}</b><small>${obj.sub||''}</small></div>
-      ${ring(pct,color)}
-      <div class="card-chev">▾</div>
-    </div>
-    <div class="card-b">${krsHtml}</div></div>`;
-}
+let closedCats={};let closedObjs={};
 
 function renderAll(){
-  renderFilters();
-  const grid=document.getElementById('grid');
+  document.getElementById('overallPct').textContent=totalPct()+'%';
+  // filters
+  let fh='<div class="fbtn '+(activeFilter==='all'?'act':'')+'" style="'+(activeFilter==='all'?'color:#7c5cff;border-color:#7c5cff':'')+'" onclick="activeFilter=\'all\';renderAll()">Всі</div>';
+  DATA.forEach((c,ci)=>{const act=activeFilter===c.ck;
+    fh+='<div class="fbtn '+(act?'act':'')+'" style="'+(act?'color:'+c.color+';border-color:'+c.color:'')+'" onclick="activeFilter=\''+c.ck+'\';renderAll()">'+c.icon+' '+c.name+'</div>'});
+  document.getElementById('filters').innerHTML=fh;
+
   let html='';
-  DATA.forEach(cat=>{
+  DATA.forEach((cat,ci)=>{
     if(activeFilter!=='all'&&activeFilter!==cat.ck)return;
-    cat.obs.forEach(obj=>{html+=renderCard(obj,cat)});
-  });
-  grid.innerHTML=html;
-  // overall
-  const op=Math.round(overallProgress()*100);
-  document.getElementById('overallPct').textContent=op+'%';
-}
+    const cp=catPct(ci);
+    const closed=closedCats[ci]?'closed':'';
+    html+='<div class="catblock '+closed+'"><div class="cathead" onclick="closedCats['+ci+']=!closedCats['+ci+'];renderAll()" style="border-left:3px solid '+cat.color+';padding-left:12px">';
+    html+='<span class="cic">'+cat.icon+'</span><b>'+cat.name+'</b>';
+    html+='<span class="cpct" style="color:'+cat.color+'">'+cp+'%</span>';
+    html+='<span class="chev">▾</span></div><div class="catbody">';
 
-function toggleCard(id){closedCards[id]=!closedCards[id];
-  const el=document.querySelector(`[data-oid="${id}"]`);if(el)el.classList.toggle('closed',closedCards[id])}
+    cat.obs.forEach((obj,oi)=>{
+      const op=objPct(ci,oi);
+      const oc=closedObjs[ci+'_'+oi]?'closed':'';
+      html+='<div class="obj '+oc+'">';
+      html+='<div class="obj-h" onclick="closedObjs[\''+ci+'_'+oi+'\']= !closedObjs[\''+ci+'_'+oi+'\'];renderAll()">';
+      html+='<span class="onum" style="background:'+cat.color+'22;color:'+cat.color+'">O'+(oi+1)+'</span>';
+      html+='<span class="otxt">'+obj.text+'</span>';
+      html+='<span class="opct" style="color:'+cat.color+'">'+op+'%</span>';
+      html+='<span class="ochev">▾</span></div>';
+      html+='<div class="obj-b">';
+      html+='<div class="pbar"><div class="pbar-fill" style="width:'+op+'%;background:'+cat.color+'"></div></div>';
 
-/* ═══════════════ INIT COMPLETED Q1 ═══════════════ */
-(function initDone(){
-  DATA.forEach(cat=>cat.obs.forEach(obj=>{
-    if(obj.done)obj.krs.forEach(kr=>{if(!ST[kr.id])ST[kr.id]='achieved'});
-  }));
-  saveState();
-})();
+      obj.krs.forEach((kr,ki)=>{
+        const kv=krVal(ci,oi,ki);
+        html+='<div class="kr">';
+        html+='<div class="kr-head">';
+        html+='<span class="kr-tag" style="background:'+cat.color+'22;color:'+cat.color+'">KR'+(ki+1)+'</span>';
+        html+='<span class="kr-txt">'+kr.text+'</span>';
+        html+='<span class="kr-pct" style="color:'+cat.color+'">'+kv+'%</span></div>';
+        html+='<div class="kr-slider"><input type="range" min="0" max="100" value="'+kv+'" oninput="setKr('+ci+','+oi+','+ki+',+this.value)"/></div>';
+        html+='<div class="pbar"><div class="pbar-fill" style="width:'+kv+'%;background:'+cat.color+'"></div></div>';
 
-/* ═══════════════ SYNC ═══════════════ */
-function buildPayload(){
-  const p={'Дата':new Date().toISOString().slice(0,10),'Тип':'OKR Snapshot'};
-  DATA.forEach(cat=>{cat.obs.forEach(obj=>{
-    p[obj.n+' (%)']=Math.round(objProgress(obj)*100);
-    obj.krs.forEach(kr=>{
-      const v=ST[kr.id];
-      if(kr.t==='s')p[kr.n]=v==='achieved'?'Досягнуто':v==='in_progress'?'В процесі':'Не розпочато';
-      else p[kr.n]=v||0;
+        kr.kts.forEach((kt,ti)=>{
+          const done=ktDone(ci,oi,ki,ti);
+          html+='<div class="kt">';
+          html+='<div class="kt-dot '+(done?'done':'')+'" onclick="toggleKt('+ci+','+oi+','+ki+','+ti+')"></div>';
+          html+='<div class="kt-txt '+(done?'done':'')+'" onclick="toggleKt('+ci+','+oi+','+ki+','+ti+')">'+kt+'</div></div>';
+        });
+        html+='</div>';
+      });
+      html+='</div></div>';
     });
-  })});
-  return p;
+    html+='</div></div>';
+  });
+  document.getElementById('app').innerHTML=html;
 }
+
+/* ═══════ SYNC ═══════ */
+function buildPayload(){
+  const p={'Дата':new Date().toISOString().slice(0,10),'Тип':'OKR'};
+  DATA.forEach((cat,ci)=>{
+    p[cat.name+' (%)']=catPct(ci);
+    cat.obs.forEach((obj,oi)=>{
+      const oLabel='O'+(oi+1)+': '+obj.text.slice(0,40);
+      p[cat.icon+' '+oLabel+' (%)']=objPct(ci,oi);
+      obj.krs.forEach((kr,ki)=>{p['KR'+(ki+1)+': '+kr.text.slice(0,35)]=krVal(ci,oi,ki)+'%'});
+    });
+  });
+  return p}
 async function syncOKR(){
-  const hook=localStorage.getItem(HOOKKEY);
-  const btn=document.getElementById('sendBtn'),txt=document.getElementById('sendTxt');
+  const hook=localStorage.getItem(HOOKKEY),btn=document.getElementById('sendBtn'),txt=document.getElementById('sendTxt');
   const payload=buildPayload();
-  if(!hook){try{await navigator.clipboard.writeText(JSON.stringify(payload,null,2))}catch(e){}
-    toast('Webhook не підключено. JSON скопійовано.');return}
+  if(!hook){try{await navigator.clipboard.writeText(JSON.stringify(payload,null,2))}catch(e){}toast('JSON скопійовано. Webhook через ⚙ у трекері.');return}
   btn.classList.add('busy');txt.textContent='Синхронізую…';
   try{await fetch(hook,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     btn.classList.remove('busy');btn.classList.add('ok');txt.textContent='OKR синхронізовано ✓';
     setTimeout(()=>{btn.classList.remove('ok');txt.textContent='Синхронізувати OKR → Google Sheets'},3500);
-  }catch(e){btn.classList.remove('busy');txt.textContent='Синхронізувати OKR → Google Sheets';toast('Помилка мережі.')}
-}
-
-let tt_=0;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(tt_);tt_=setTimeout(()=>t.classList.remove('show'),2600)}
+  }catch(e){btn.classList.remove('busy');txt.textContent='Синхронізувати OKR → Google Sheets';toast('Помилка мережі.')}}
+let tt_=0;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt_);tt_=setTimeout(()=>t.classList.remove('show'),2600)}
 
 renderAll();
 </script>
