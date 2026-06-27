@@ -31,7 +31,6 @@ body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),tr
 .fbtn{flex:none;border:1px solid var(--stroke-hi);background:var(--surface);color:var(--txt-dim);
   padding:6px 13px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
 .fbtn.act{color:#fff}
-/* category block */
 .catblock{margin:16px 0 24px}
 .cathead{display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;user-select:none}
 .cathead .cic{font-size:18px}.cathead b{font-size:16px;font-weight:700;flex:1}
@@ -39,22 +38,17 @@ body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),tr
 .cathead .chev{color:var(--txt-faint);font-size:12px;transition:transform .3s}
 .catblock.closed .cathead .chev{transform:rotate(-90deg)}
 .catblock.closed .catbody{display:none}
-/* objective */
 .obj{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--r);margin:10px 0;overflow:hidden}
 .obj-h{padding:14px 16px;cursor:pointer;user-select:none;display:flex;gap:12px;align-items:flex-start}
 .obj-h .onum{font-size:12px;font-weight:800;padding:3px 8px;border-radius:7px;flex:none;margin-top:2px}
 .obj-h .otxt{flex:1;font-size:14.5px;font-weight:600;line-height:1.35}
 .obj-h .opct{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;flex:none;margin-top:2px}
 .obj-h .ochev{color:var(--txt-faint);font-size:11px;flex:none;margin-top:4px;transition:transform .3s}
-.obj.closed .ochev{transform:rotate(-90deg)}
-.obj.closed .obj-b{display:none}
+.obj.closed .ochev{transform:rotate(-90deg)}.obj.closed .obj-b{display:none}
 .obj-b{padding:0 14px 14px}
-/* progress bar shared */
 .pbar{height:6px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:6px}
 .pbar-fill{height:100%;border-radius:99px;transition:width .4s cubic-bezier(.22,1,.36,1)}
-/* KR */
-.kr{border-top:1px solid var(--stroke);padding:12px 0 8px}
-.kr:first-child{border-top:none}
+.kr{border-top:1px solid var(--stroke);padding:12px 0 8px}.kr:first-child{border-top:none}
 .kr-head{display:flex;align-items:flex-start;gap:10px}
 .kr-tag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;flex:none;margin-top:2px}
 .kr-txt{flex:1;font-size:13.5px;line-height:1.4}
@@ -62,14 +56,12 @@ body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),tr
 .kr-slider{display:flex;align-items:center;gap:10px;margin-top:8px}
 .kr-slider input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;background:rgba(255,255,255,.08);outline:none}
 .kr-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--txt);cursor:pointer;border:3px solid #7c5cff;box-shadow:0 2px 6px rgba(0,0,0,.4)}
-/* KT */
 .kt{padding:6px 0 4px 24px;position:relative}
 .kt::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;border-radius:2px;background:rgba(255,255,255,.06)}
-.kt-dot{position:absolute;left:5px;top:11px;width:8px;height:8px;border-radius:50%;border:2px solid var(--stroke-hi);background:var(--bg2);transition:all .2s}
+.kt-dot{position:absolute;left:5px;top:11px;width:8px;height:8px;border-radius:50%;border:2px solid var(--stroke-hi);background:var(--bg2);cursor:pointer;transition:all .2s}
 .kt-dot.done{background:#34e0a1;border-color:#34e0a1;box-shadow:0 0 8px rgba(52,224,161,.4)}
 .kt-txt{font-size:12.5px;color:var(--txt-dim);line-height:1.4;cursor:pointer;transition:color .2s;padding-left:6px}
 .kt-txt.done{color:var(--txt-faint);text-decoration:line-through}
-/* submit */
 .submitbar{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:12px 16px calc(12px + var(--sb));
   background:linear-gradient(to top,rgba(10,10,15,.98) 60%,transparent)}
 .submitbar .inner{max-width:680px;margin:0 auto}
@@ -82,25 +74,24 @@ body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),tr
   background:var(--bg2);border:1px solid var(--stroke-hi);color:var(--txt);padding:13px 20px;border-radius:13px;
   font-size:14px;z-index:90;opacity:0;transition:.3s;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="nav"><div class="inner"><a href="index.html">← Трекер</a><h1>OKR Dashboard</h1></div></div>
+<div class="nav"><div class="inner"><a href="index.html">&#8592; Трекер</a><h1>OKR Dashboard</h1></div></div>
 <div class="wrap">
   <div class="overall"><div class="pct" id="overallPct">0%</div><div class="lbl">загальний прогрес OKR</div></div>
   <div class="filters" id="filters"></div>
   <div id="app"></div>
 </div>
 <div class="submitbar"><div class="inner">
-  <button class="sendbtn" id="sendBtn" onclick="syncOKR()"><span id="sendTxt">Синхронізувати OKR → Google Sheets</span></button>
+  <button class="sendbtn" id="sendBtn" onclick="syncOKR()"><span id="sendTxt">Синхронізувати OKR</span></button>
 </div></div>
 <div class="toast" id="toast"></div>
 <script>
 const SKEY='okr_v2',HOOKKEY='routine_hook_v1';
 
 const DATA=[
-{'name:'РОБОТА | ЗАРОБІТОК',ck:'work',icon:'💼',color:'#3b82f6',obs:[
+{name:'РОБОТА | ЗАРОБІТОК',ck:'work',icon:'💼',color:'#3b82f6',obs:[
   {text:'Успішно пройти випробувальний термін в ENKO, ставши автономним юнітом, який перевищує очікування та системно приносить результат (до 11.02.2026).',krs:[
     {text:'KR1 (Incoming Sugar): 0 скарг; закриті інтеграції; задоволеність Каті (CEO); повністю описаний і працюючий скрипт/процес обробки вхідних.',kts:['Inbox Zero: Перевірка та відповідь на всі запити тричі на день (ранок/обід/вечір), щоб не втрачати "теплий" стан клієнта.','Follow-up Map: Створення простої сітки фоловапів (через 24г, 3 дні, 1 тиждень) для кожного вхідного ліда.','Status Sync: Раз на тиждень короткий чек-лист для Шугара про статус найважливіших запитів.']},
     {text:'KR2 (Проект "ГУЧНІ"): 15 продажів пісень загалом (з них 5 - Ванька); сформована та сегментована база лідів.',kts:['Messaging A/B Test: Щотижневий аналіз: які фрази в листах викликають відповідь, а які ігноруються.','Human-to-Human (H2H): Додавання 1-2 персоналізованих речень у кожен "холодний" лист, що базуються на актуальних новинах або інтересах ліда.']},
@@ -123,7 +114,7 @@ const DATA=[
     {text:'KR4 (Цільовий розподіл): Мати чіткий розподіл накопиченого капіталу на 01.09: Подушка безпеки: 60 000 грн. Фонд 18-річчя та подорожі: 60 000 грн. Фонд навчання водінню: 20 000 грн. Вільний капітал/Резерв: 20 000 грн.',kts:['Financial Dashboard: Створити просту таблицю в Notion або Google Sheets, де раз на місяць (після всіх платежів) фіксувати загальну суму в кожній категорії: "Подушка", "Подорож", "Водіння".','Travel Budgeting (Червень): Провести розрахунок вартості подорожі на 18-річчя (квитки, готель, витрати) та перевірити, чи вистачає накопичень у категорії "Фонд 18-річчя".','Driving School Audit (Серпень): Забронювати місце в автошколі та перевірити наявність 20 000 грн на окремому рахунку для оплати навчання у вересні.']},
   ]},
 ]},
-{'name:'НАВЧАННЯ | ОСОБИСТИЙ РОЗВИТОК',ck:'edu',icon:'📚',color:'#f59e0b',obs:[
+{name:'НАВЧАННЯ | ОСОБИСТИЙ РОЗВИТОК',ck:'edu',icon:'📚',color:'#f59e0b',obs:[
   {text:'Забезпечити безперебійний навчальний процес у режимі мінімального втручання та максимальної стабільності в коледжі (3-4 курс).',krs:[
     {text:'KR1 (Frictionless Communication): 0 конфліктів або зауважень від адміністрації та викладачів; репутація «спокійного, але стабільного студента».',kts:['Ввічливі та швидкі відповіді в чатах; повне ігнорування провокацій; формальний стиль спілкування.']},
     {text:'KR2 (Academic Debt Zero): 100% атестацій закриті вчасно згідно з графіком (Лютий-Червень, Вересень-Грудень).',kts:['Аудит оцінок кожного 20-го числа; закриття всіх завдань одним блоком раз на місяць.']},
@@ -161,7 +152,7 @@ const DATA=[
     {text:'KR1 (Information Quality): Заміна 50% розважального контенту (соцмережі) на пізнавальний (Longreads, документальні фільми, лекції).',kts:['Щодня приділяти 20 хвилин вивченню теми, яка ніяк не пов\'язана з роботою (наприклад: як працює блокчейн, історія Одеси, будова двигуна внутрішнього згоряння, теорія ігор).','Підписатися на 3 якісних медіа або YouTube-канали про науку/історію/технології (наприклад: *Kurzgesagt, Veritasium, WAS* або подкасти про історію).','Щоразу, коли чуєш незрозумілий термін або посилання на подію від старших колег — не кивай головою, а записуй і ввечері приділи 5 хвилин, щоб розібратися.','Раз на тиждень дивитися 1 культовий фільм або читати 1 книгу, які вважаються «базою» для освіченої людини (класика кіно, біографії великих лідерів).']},
   ]},
 ]},
-{'name:'МЕНІ 18',ck:'eighteen',icon:'🎂',color:'#ec4899',obs:[
+{name:'МЕНІ 18',ck:'eighteen',icon:'🎂',color:'#ec4899',obs:[
   {text:'Реалізувати експеримент «Перша автономія» та сформувати власний фонд мобільного житла.',krs:[
     {text:'KR1 (Asset Accumulation): Придбано базовий комплект «Мобільного дому» (наприклад: якісне ліжко/матрац, робоче крісло, система зберігання), який відповідає твоїм стандартам комфорту.',kts:[]},
     {text:'KR2 (The Test Drive): Успішно реалізовано кейс «1 місяць соло-життя» в орендованій квартирі в Одесі з повним самозабезпеченням (бюджет, їжа, комуналка).',kts:[]},
@@ -173,7 +164,7 @@ const DATA=[
     {text:'KR3 (Digital Identity): Всі оновлені документи відображаються в застосунку «Дія» та «Резерв+».',kts:['За місяць до 18-річчя (серпень) перевірити термін дії поточної ID-картки та записатися в чергу до ЦНАПу на листопад.','У вересні 2026 взяти в коледжі довідку про навчання (Форма-20) для ТЦК.','У жовтні 2026 (перед походом у ТЦК) проконсультуватися з юристом або батьками, щоб чітко знати алгоритм дій і не мати сюрпризів.','Сфотографувати та завантажити в захищене хмарне сховище всі нові документи.']},
   ]},
 ]},
-{'name:'ЗДОРОВ\'Я',ck:'health',icon:'🏥',color:'#ef4444',obs:[
+{name:'ЗДОРОВ\'Я',ck:'health',icon:'🏥',color:'#ef4444',obs:[
   {text:'Перетворити фізичну активність на стабільну систему підтримки життєдіяльності та досягти прогресу в силових показниках і формі тіла (наростити масу).',krs:[
     {text:'KR1 (Consistency): Стабільне відвідування залу 2–3 рази на тиждень (мінімум 10 тренувань на місяць).',kts:[]},
     {text:'KR2 (Data Literacy): 100% заповнення таблиці метрик (вага, робоча вага в залі, самопочуття) після кожного тренування.',kts:[]},
@@ -210,7 +201,7 @@ const DATA=[
     {text:'KR2 (Crisis Management): Опанування та успішне застосування 2-3 технік швидкого зняття гострого стресу (наприклад, дихання за квадратом або техніка «5-4-3-2-1»).',kts:['Впровадити ритуал «3 хвилини тиші» (дихання) після завершення робочого дня в ENKO перед тим, як переходити до особистих справ.','Щовечора виписувати в нотатки 3 «перемоги дня» або просто всі тривожні думки (Brain Dump), щоб «вивантажити» їх із голови перед сном.','Уникати кави (діуретик та стимулятор тривоги) у другій половині дня, замінюючи її водою (твій OKR по воді) або трав\'яним чаєм.','Під час нападів тривоги використовувати фізичну дію: вмивання холодною водою, коротка розминка або прогулянка (твій KT по ходьбі).','Якщо рівень тривоги не знижується протягом місяця — звернутися до психолога для аудиту твоїх внутрішніх налаштувань.']},
   ]},
 ]},
-{'name:'МІЙ БРЕНД',ck:'brand',icon:'🎨',color:'#8b5cf6',obs:[
+{name:'МІЙ БРЕНД',ck:'brand',icon:'🎨',color:'#8b5cf6',obs:[
   {text:'Сформувати стабільну медіа-присутність, яка транслює твої цінності, професіоналізм та творчий процес.',krs:[
     {text:'KR1 (Consistency): Регулярна публікація контенту: 2–3 TikTok/Reels на тиждень та щоденні сторіз (мінімум 3–5 сенсових кадрів).',kts:[]},
     {text:'KR2 (Aesthetic Tone): Сформовано візуальний стиль (Tone of Voice, кольорова гама, мінімалістичний монтаж), який відповідає твоїй екосистемі.',kts:[]},
@@ -218,7 +209,7 @@ const DATA=[
     {text:'KR4 (Authenticity): Впровадження формату «Daily Log» — чесна рефлексія про твої перемоги та факапи на шляху до 18 років.',kts:['Визначити 3 основні лінії контенту: 1) «Work Mode» (менеджмент, ENKO, AI), 2) «Creative Flow» (музика, Logic Pro, демо), 3) «Life Upgrade» (водіння, готування, переїзд).','Виділити 2 години в суботу або неділю на зйомку та монтаж пачки відео (batch creation), щоб не витрачати ресурс у робочі будні.','Створити мудборд у Pinterest для орієнтира на естетику кадру (світло, ракурс, деталі).','Навчитися знімати «живі» моменти протягом дня (15-секундні кадри робочого місця, прогулянки, процесу запису), щоб мати базу для монтажу.']},
   ]},
 ]},
-{'name:'ВІДНОСИНИ',ck:'rel',icon:'💬',color:'#06b6d4',obs:[
+{name:'ВІДНОСИНИ',ck:'rel',icon:'💬',color:'#06b6d4',obs:[
   {text:'Побудувати автентичну та легку систему соціальних взаємодій, де пріоритетом є особисте задоволення та емоційний комфорт.',krs:[
     {text:'KR1 (Quality Sorting): Сформовано навик миттєвої селекції: 0 витраченого часу на токсичних людей або «порожнє» спілкування.',kts:[]},
     {text:'KR2 (Random Joy): Отримання задоволення від спонтанних зустрічей та знайомств без спроб зазирнути в майбутнє.',kts:[]},
@@ -230,7 +221,7 @@ const DATA=[
     {text:'KR3 (Moral Readiness): Сім\'я звикла до думки про твій переїзд і сприймає це як природний процес, а не як катастрофу.',kts:['Поступово перебирати на себе всі «дорослі» справи (від запису до лікаря до купівлі продуктів для себе), щоб вони бачили: ти справляєшся.','Відпрацювати ввічливі, але тверді фрази-відмови на спроби надмірного втручання: «Дякую за турботу, я вже вирішив це питання», «Я розповім про це пізніше, зараз мені потрібен фокус».','Чітко визначити свою територію (навіть якщо це частина кімнати) і час, коли тебе не можна турбувати (наприклад, під час роботи в Logic Pro чи дзвінків з ENKO).','Збільшувати час, проведений поза домом або в автономному режимі, щоб «привчити» систему до твоєї фізичної та емоційної відсутності.']},
   ]},
 ]},
-{'name:'ВІДПОЧИНОК ТА ДОЗВІЛЛЯ',ck:'leisure',icon:'✈️',color:'#f97316',obs:[
+{name:'ВІДПОЧИНОК ТА ДОЗВІЛЛЯ',ck:'leisure',icon:'✈️',color:'#f97316',obs:[
   {text:'Розширити межі особистого простору через 11 стратегічних подорожей протягом року.',krs:[
     {text:'KR1 (Domestic Volume): Здійснено 10 поїздок у різні куточки України.',kts:[]},
     {text:'KR2 (Global Leap): Реалізовано 1 закордонну подорож (наприклад, Європа).',kts:[]},
@@ -240,64 +231,62 @@ const DATA=[
 ]},
 ];
 
-/* ═══════ STATE ═══════ */
-/* State: { 'cat_obj_kr': percent 0-100, 'cat_obj_kr_kt': bool } */
-let ST; try{ST=JSON.parse(localStorage.getItem(SKEY))||{}}catch(e){ST={}}
+let ST;try{ST=JSON.parse(localStorage.getItem(SKEY))||{}}catch(e){ST={}}
 function saveState(){localStorage.setItem(SKEY,JSON.stringify(ST))}
 function uid(ci,oi,ki,ti){return ci+'_'+oi+'_'+ki+(ti!==undefined?'_'+ti:'')}
-
 function krVal(ci,oi,ki){return ST[uid(ci,oi,ki)]||0}
 function ktDone(ci,oi,ki,ti){return!!ST[uid(ci,oi,ki,ti)]}
 function setKr(ci,oi,ki,v){ST[uid(ci,oi,ki)]=v;saveState();renderAll()}
-function toggleKt(ci,oi,ki,ti){const k=uid(ci,oi,ki,ti);ST[k]=!ST[k];saveState();renderAll()}
+function toggleKt(ci,oi,ki,ti){var k=uid(ci,oi,ki,ti);ST[k]=!ST[k];saveState();renderAll()}
 
-/* ═══════ PROGRESS ═══════ */
-function objPct(ci,oi){
-  const obj=DATA[ci].obs[oi]; if(!obj.krs.length)return 0;
-  return Math.round(obj.krs.reduce((s,_,ki)=>s+krVal(ci,oi,ki),0)/obj.krs.length)}
-function catPct(ci){
-  const cat=DATA[ci];if(!cat.obs.length)return 0;
-  return Math.round(cat.obs.reduce((s,_,oi)=>s+objPct(ci,oi),0)/cat.obs.length)}
-function totalPct(){
-  if(!DATA.length)return 0;
-  return Math.round(DATA.reduce((s,_,ci)=>s+catPct(ci),0)/DATA.length)}
+function objPct(ci,oi){var obj=DATA[ci].obs[oi];if(!obj.krs.length)return 0;
+  return Math.round(obj.krs.reduce(function(s,_,ki){return s+krVal(ci,oi,ki)},0)/obj.krs.length)}
+function catPct(ci){var cat=DATA[ci];if(!cat.obs.length)return 0;
+  return Math.round(cat.obs.reduce(function(s,_,oi){return s+objPct(ci,oi)},0)/cat.obs.length)}
+function totalPct(){if(!DATA.length)return 0;
+  return Math.round(DATA.reduce(function(s,_,ci){return s+catPct(ci)},0)/DATA.length)}
 
-/* ═══════ RENDER ═══════ */
-let activeFilter='all';
-let closedCats={};let closedObjs={};
+var activeFilter='all';
+var closedCats={};var closedObjs={};
+
+function setFilter(f){activeFilter=f;renderAll()}
+function toggleCat(ci){closedCats[ci]=!closedCats[ci];renderAll()}
+function toggleObj(ci,oi){closedObjs[ci+'_'+oi]=!closedObjs[ci+'_'+oi];renderAll()}
 
 function renderAll(){
   document.getElementById('overallPct').textContent=totalPct()+'%';
-  // filters
-  let fh='<div class="fbtn '+(activeFilter==='all'?'act':'')+'" style="'+(activeFilter==='all'?'color:#7c5cff;border-color:#7c5cff':'')+'" onclick="activeFilter=\'all\';renderAll()">Всі</div>';
-  DATA.forEach((c,ci)=>{const act=activeFilter===c.ck;
-    fh+='<div class="fbtn '+(act?'act':'')+'" style="'+(act?'color:'+c.color+';border-color:'+c.color:'')+'" onclick="activeFilter=\''+c.ck+'\';renderAll()">'+c.icon+' '+c.name+'</div>'});
-  document.getElementById('filters').innerHTML=fh;
+  var fEl=document.getElementById('filters');
+  var fh='<div class="fbtn '+(activeFilter==='all'?'act':'')+'" style="'+(activeFilter==='all'?'color:#7c5cff;border-color:#7c5cff':'')+'" onclick="setFilter('all')">Всі</div>';
+  DATA.forEach(function(c,ci){var act=activeFilter===c.ck;
+    fh+='<div class="fbtn '+(act?'act':'')+'" style="'+(act?'color:'+c.color+';border-color:'+c.color:'')+'" onclick="setFilter(''+c.ck+'')">'+c.icon+' '+c.name+'</div>'});
+  fEl.innerHTML=fh;
 
-  let html='';
-  DATA.forEach((cat,ci)=>{
+  var html='';
+  DATA.forEach(function(cat,ci){
     if(activeFilter!=='all'&&activeFilter!==cat.ck)return;
-    const cp=catPct(ci);
-    const closed=closedCats[ci]?'closed':'';
-    html+='<div class="catblock '+closed+'"><div class="cathead" onclick="closedCats['+ci+']=!closedCats['+ci+'];renderAll()" style="border-left:3px solid '+cat.color+';padding-left:12px">';
+    var cp=catPct(ci);
+    var closed=closedCats[ci]?'closed':'';
+    html+='<div class="catblock '+closed+'">';
+    html+='<div class="cathead" onclick="toggleCat('+ci+')" style="border-left:3px solid '+cat.color+';padding-left:12px">';
     html+='<span class="cic">'+cat.icon+'</span><b>'+cat.name+'</b>';
     html+='<span class="cpct" style="color:'+cat.color+'">'+cp+'%</span>';
-    html+='<span class="chev">▾</span></div><div class="catbody">';
+    html+='<span class="chev">&#9662;</span></div>';
+    html+='<div class="catbody">';
 
-    cat.obs.forEach((obj,oi)=>{
-      const op=objPct(ci,oi);
-      const oc=closedObjs[ci+'_'+oi]?'closed':'';
+    cat.obs.forEach(function(obj,oi){
+      var op=objPct(ci,oi);
+      var oc=closedObjs[ci+'_'+oi]?'closed':'';
       html+='<div class="obj '+oc+'">';
-      html+='<div class="obj-h" onclick="closedObjs[\''+ci+'_'+oi+'\']= !closedObjs[\''+ci+'_'+oi+'\'];renderAll()">';
+      html+='<div class="obj-h" onclick="toggleObj('+ci+','+oi+')">';
       html+='<span class="onum" style="background:'+cat.color+'22;color:'+cat.color+'">O'+(oi+1)+'</span>';
       html+='<span class="otxt">'+obj.text+'</span>';
       html+='<span class="opct" style="color:'+cat.color+'">'+op+'%</span>';
-      html+='<span class="ochev">▾</span></div>';
+      html+='<span class="ochev">&#9662;</span></div>';
       html+='<div class="obj-b">';
       html+='<div class="pbar"><div class="pbar-fill" style="width:'+op+'%;background:'+cat.color+'"></div></div>';
 
-      obj.krs.forEach((kr,ki)=>{
-        const kv=krVal(ci,oi,ki);
+      obj.krs.forEach(function(kr,ki){
+        var kv=krVal(ci,oi,ki);
         html+='<div class="kr">';
         html+='<div class="kr-head">';
         html+='<span class="kr-tag" style="background:'+cat.color+'22;color:'+cat.color+'">KR'+(ki+1)+'</span>';
@@ -306,8 +295,8 @@ function renderAll(){
         html+='<div class="kr-slider"><input type="range" min="0" max="100" value="'+kv+'" oninput="setKr('+ci+','+oi+','+ki+',+this.value)"/></div>';
         html+='<div class="pbar"><div class="pbar-fill" style="width:'+kv+'%;background:'+cat.color+'"></div></div>';
 
-        kr.kts.forEach((kt,ti)=>{
-          const done=ktDone(ci,oi,ki,ti);
+        kr.kts.forEach(function(kt,ti){
+          var done=ktDone(ci,oi,ki,ti);
           html+='<div class="kt">';
           html+='<div class="kt-dot '+(done?'done':'')+'" onclick="toggleKt('+ci+','+oi+','+ki+','+ti+')"></div>';
           html+='<div class="kt-txt '+(done?'done':'')+'" onclick="toggleKt('+ci+','+oi+','+ki+','+ti+')">'+kt+'</div></div>';
@@ -321,28 +310,27 @@ function renderAll(){
   document.getElementById('app').innerHTML=html;
 }
 
-/* ═══════ SYNC ═══════ */
 function buildPayload(){
-  const p={'Дата':new Date().toISOString().slice(0,10),'Тип':'OKR'};
-  DATA.forEach((cat,ci)=>{
+  var p={};p['Дата']=new Date().toISOString().slice(0,10);p['Тип']='OKR';
+  DATA.forEach(function(cat,ci){
     p[cat.name+' (%)']=catPct(ci);
-    cat.obs.forEach((obj,oi)=>{
-      const oLabel='O'+(oi+1)+': '+obj.text.slice(0,40);
+    cat.obs.forEach(function(obj,oi){
+      var oLabel='O'+(oi+1)+': '+obj.text.slice(0,40);
       p[cat.icon+' '+oLabel+' (%)']=objPct(ci,oi);
-      obj.krs.forEach((kr,ki)=>{p['KR'+(ki+1)+': '+kr.text.slice(0,35)]=krVal(ci,oi,ki)+'%'});
+      obj.krs.forEach(function(kr,ki){p['KR'+(ki+1)+': '+kr.text.slice(0,35)]=krVal(ci,oi,ki)+'%'});
     });
   });
   return p}
-async function syncOKR(){
-  const hook=localStorage.getItem(HOOKKEY),btn=document.getElementById('sendBtn'),txt=document.getElementById('sendTxt');
-  const payload=buildPayload();
-  if(!hook){try{await navigator.clipboard.writeText(JSON.stringify(payload,null,2))}catch(e){}toast('JSON скопійовано. Webhook через ⚙ у трекері.');return}
+function syncOKR(){
+  var hook=localStorage.getItem(HOOKKEY),btn=document.getElementById('sendBtn'),txt=document.getElementById('sendTxt');
+  var payload=buildPayload();
+  if(!hook){try{navigator.clipboard.writeText(JSON.stringify(payload,null,2))}catch(e){}toast('JSON скопійовано.');return}
   btn.classList.add('busy');txt.textContent='Синхронізую…';
-  try{await fetch(hook,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  fetch(hook,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(function(){
     btn.classList.remove('busy');btn.classList.add('ok');txt.textContent='OKR синхронізовано ✓';
-    setTimeout(()=>{btn.classList.remove('ok');txt.textContent='Синхронізувати OKR → Google Sheets'},3500);
-  }catch(e){btn.classList.remove('busy');txt.textContent='Синхронізувати OKR → Google Sheets';toast('Помилка мережі.')}}
-let tt_=0;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt_);tt_=setTimeout(()=>t.classList.remove('show'),2600)}
+    setTimeout(function(){btn.classList.remove('ok');txt.textContent='Синхронізувати OKR'},3500);
+  }).catch(function(){btn.classList.remove('busy');txt.textContent='Синхронізувати OKR';toast('Помилка мережі.')})}
+var tt_=0;function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt_);tt_=setTimeout(function(){t.classList.remove('show')},2600)}
 
 renderAll();
 </script>
