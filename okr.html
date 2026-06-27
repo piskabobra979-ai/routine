@@ -346,7 +346,7 @@ function renderAll(){
 
 document.getElementById("sendBtn").addEventListener("click",function(){
   var hook=localStorage.getItem(HOOKKEY),btn=this,txt=document.getElementById("sendTxt");
-  var p={};p["Дата"]=new Date().toISOString().slice(0,10);p["Тип"]="OKR";
+  var p={};p["_sheet"]="OKR";p["Дата"]=new Date().toISOString().slice(0,10);
   DATA.forEach(function(cat,ci){
     p[cat.name+" (%)"]=catPct(ci);
     cat.obs.forEach(function(obj,oi){

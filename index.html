@@ -495,7 +495,7 @@ let tt_=0;function toast(msg){const t=document.getElementById('toast');t.textCon
 /* ═══════ PAYLOAD ═══════ */
 function buildPayload(){
   const b=v=>v?1:0,tog=v=>v===true?'Так':v===false?'Ні':'';
-  const p={'Дата':S.date,'Сон (год)':S.sleepH,'Час ліг':S.bed,'Час встав':S.wake};
+  const p={'_sheet':'Routine','Дата':S.date,'Сон (год)':S.sleepH,'Час ліг':S.bed,'Час встав':S.wake};
   allChecks.forEach(c=>p[c[1]]=b(S.checks[c[0]]));
   p['Вода (мл)']=S.water*200;p['Вода (склянок)']=S.water;
   p['Море']=tog(S.toggles.sea);p['10к кроків']=tog(S.toggles.steps);
