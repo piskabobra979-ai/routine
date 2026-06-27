@@ -57,7 +57,7 @@ body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),tr
 .kr-slider input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;background:rgba(255,255,255,.08);outline:none}
 .kr-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--txt);cursor:pointer;border:3px solid #7c5cff;box-shadow:0 2px 6px rgba(0,0,0,.4)}
 .kt{padding:6px 0 4px 24px;position:relative}
-.kt::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;border-radius:2px;background:rgba(255,255,255,.06)}
+.kt::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;border-radius:2px;background:rgba(255,255,255,.06)}
 .kt-dot{position:absolute;left:5px;top:11px;width:8px;height:8px;border-radius:50%;border:2px solid var(--stroke-hi);background:var(--bg2);cursor:pointer;transition:all .2s}
 .kt-dot.done{background:#34e0a1;border-color:#34e0a1;box-shadow:0 0 8px rgba(52,224,161,.4)}
 .kt-txt{font-size:12.5px;color:var(--txt-dim);line-height:1.4;cursor:pointer;transition:color .2s;padding-left:6px}
@@ -84,11 +84,11 @@ body{background:radial-gradient(1200px 600px at 80% -10%,rgba(124,92,255,.12),tr
   <div id="app"></div>
 </div>
 <div class="submitbar"><div class="inner">
-  <button class="sendbtn" id="sendBtn" onclick="syncOKR()"><span id="sendTxt">Синхронізувати OKR</span></button>
+  <button class="sendbtn" id="sendBtn"><span id="sendTxt">Синхронізувати OKR</span></button>
 </div></div>
 <div class="toast" id="toast"></div>
 <script>
-const SKEY='okr_v2',HOOKKEY='routine_hook_v1';
+var SKEY="okr_v2",HOOKKEY="routine_hook_v1";
 
 const DATA=[
 {name:'РОБОТА | ЗАРОБІТОК',ck:'work',icon:'💼',color:'#3b82f6',obs:[
@@ -231,106 +231,137 @@ const DATA=[
 ]},
 ];
 
-let ST;try{ST=JSON.parse(localStorage.getItem(SKEY))||{}}catch(e){ST={}}
+var ST;try{ST=JSON.parse(localStorage.getItem(SKEY))||{}}catch(e){ST={}}
 function saveState(){localStorage.setItem(SKEY,JSON.stringify(ST))}
-function uid(ci,oi,ki,ti){return ci+'_'+oi+'_'+ki+(ti!==undefined?'_'+ti:'')}
+function uid(ci,oi,ki,ti){return ci+"_"+oi+"_"+ki+(ti!==undefined?"_"+ti:"")}
 function krVal(ci,oi,ki){return ST[uid(ci,oi,ki)]||0}
 function ktDone(ci,oi,ki,ti){return!!ST[uid(ci,oi,ki,ti)]}
-function setKr(ci,oi,ki,v){ST[uid(ci,oi,ki)]=v;saveState();renderAll()}
-function toggleKt(ci,oi,ki,ti){var k=uid(ci,oi,ki,ti);ST[k]=!ST[k];saveState();renderAll()}
 
 function objPct(ci,oi){var obj=DATA[ci].obs[oi];if(!obj.krs.length)return 0;
-  return Math.round(obj.krs.reduce(function(s,_,ki){return s+krVal(ci,oi,ki)},0)/obj.krs.length)}
+  var s=0;for(var ki=0;ki<obj.krs.length;ki++)s+=krVal(ci,oi,ki);return Math.round(s/obj.krs.length)}
 function catPct(ci){var cat=DATA[ci];if(!cat.obs.length)return 0;
-  return Math.round(cat.obs.reduce(function(s,_,oi){return s+objPct(ci,oi)},0)/cat.obs.length)}
+  var s=0;for(var oi=0;oi<cat.obs.length;oi++)s+=objPct(ci,oi);return Math.round(s/cat.obs.length)}
 function totalPct(){if(!DATA.length)return 0;
-  return Math.round(DATA.reduce(function(s,_,ci){return s+catPct(ci)},0)/DATA.length)}
+  var s=0;for(var ci=0;ci<DATA.length;ci++)s+=catPct(ci);return Math.round(s/DATA.length)}
 
-var activeFilter='all';
+var activeFilter="all";
 var closedCats={};var closedObjs={};
 
-function setFilter(f){activeFilter=f;renderAll()}
-function toggleCat(ci){closedCats[ci]=!closedCats[ci];renderAll()}
-function toggleObj(ci,oi){closedObjs[ci+'_'+oi]=!closedObjs[ci+'_'+oi];renderAll()}
-
 function renderAll(){
-  document.getElementById('overallPct').textContent=totalPct()+'%';
-  var fEl=document.getElementById('filters');
-  var fh='<div class="fbtn '+(activeFilter==='all'?'act':'')+'" style="'+(activeFilter==='all'?'color:#7c5cff;border-color:#7c5cff':'')+'" onclick="setFilter('all')">Всі</div>';
-  DATA.forEach(function(c,ci){var act=activeFilter===c.ck;
-    fh+='<div class="fbtn '+(act?'act':'')+'" style="'+(act?'color:'+c.color+';border-color:'+c.color:'')+'" onclick="setFilter(''+c.ck+'')">'+c.icon+' '+c.name+'</div>'});
-  fEl.innerHTML=fh;
+  document.getElementById("overallPct").textContent=totalPct()+"%";
+  var fEl=document.getElementById("filters");
+  var appEl=document.getElementById("app");
+  // Clear and rebuild
+  fEl.innerHTML="";
+  appEl.innerHTML="";
 
-  var html='';
+  // Filters
+  var allBtn=document.createElement("div");
+  allBtn.className="fbtn"+(activeFilter==="all"?" act":"");
+  if(activeFilter==="all"){allBtn.style.color="#7c5cff";allBtn.style.borderColor="#7c5cff"}
+  allBtn.textContent="Всі";
+  allBtn.addEventListener("click",function(){activeFilter="all";renderAll()});
+  fEl.appendChild(allBtn);
+
+  DATA.forEach(function(c,ci){
+    var btn=document.createElement("div");
+    btn.className="fbtn"+(activeFilter===c.ck?" act":"");
+    if(activeFilter===c.ck){btn.style.color=c.color;btn.style.borderColor=c.color}
+    btn.textContent=c.icon+" "+c.name;
+    btn.addEventListener("click",function(){activeFilter=c.ck;renderAll()});
+    fEl.appendChild(btn);
+  });
+
+  // Categories
   DATA.forEach(function(cat,ci){
-    if(activeFilter!=='all'&&activeFilter!==cat.ck)return;
+    if(activeFilter!=="all"&&activeFilter!==cat.ck)return;
     var cp=catPct(ci);
-    var closed=closedCats[ci]?'closed':'';
-    html+='<div class="catblock '+closed+'">';
-    html+='<div class="cathead" onclick="toggleCat('+ci+')" style="border-left:3px solid '+cat.color+';padding-left:12px">';
-    html+='<span class="cic">'+cat.icon+'</span><b>'+cat.name+'</b>';
-    html+='<span class="cpct" style="color:'+cat.color+'">'+cp+'%</span>';
-    html+='<span class="chev">&#9662;</span></div>';
-    html+='<div class="catbody">';
+    var block=document.createElement("div");
+    block.className="catblock"+(closedCats[ci]?" closed":"");
+
+    var head=document.createElement("div");
+    head.className="cathead";
+    head.style.borderLeft="3px solid "+cat.color;
+    head.style.paddingLeft="12px";
+    head.innerHTML="<span class=\"cic\">"+cat.icon+"</span><b>"+cat.name+"</b><span class=\"cpct\" style=\"color:"+cat.color+"\">"+cp+"%</span><span class=\"chev\">&#9662;</span>";
+    head.addEventListener("click",function(){closedCats[ci]=!closedCats[ci];renderAll()});
+    block.appendChild(head);
+
+    var body=document.createElement("div");
+    body.className="catbody";
 
     cat.obs.forEach(function(obj,oi){
       var op=objPct(ci,oi);
-      var oc=closedObjs[ci+'_'+oi]?'closed':'';
-      html+='<div class="obj '+oc+'">';
-      html+='<div class="obj-h" onclick="toggleObj('+ci+','+oi+')">';
-      html+='<span class="onum" style="background:'+cat.color+'22;color:'+cat.color+'">O'+(oi+1)+'</span>';
-      html+='<span class="otxt">'+obj.text+'</span>';
-      html+='<span class="opct" style="color:'+cat.color+'">'+op+'%</span>';
-      html+='<span class="ochev">&#9662;</span></div>';
-      html+='<div class="obj-b">';
-      html+='<div class="pbar"><div class="pbar-fill" style="width:'+op+'%;background:'+cat.color+'"></div></div>';
+      var card=document.createElement("div");
+      card.className="obj"+(closedObjs[ci+"_"+oi]?" closed":"");
+
+      var oh=document.createElement("div");
+      oh.className="obj-h";
+      oh.innerHTML="<span class=\"onum\" style=\"background:"+cat.color+"22;color:"+cat.color+"\">O"+(oi+1)+"</span><span class=\"otxt\">"+obj.text+"</span><span class=\"opct\" style=\"color:"+cat.color+"\">"+op+"%</span><span class=\"ochev\">&#9662;</span>";
+      oh.addEventListener("click",function(){closedObjs[ci+"_"+oi]=!closedObjs[ci+"_"+oi];renderAll()});
+      card.appendChild(oh);
+
+      var ob=document.createElement("div");
+      ob.className="obj-b";
+      ob.innerHTML="<div class=\"pbar\"><div class=\"pbar-fill\" style=\"width:"+op+"%;background:"+cat.color+"\"></div></div>";
 
       obj.krs.forEach(function(kr,ki){
         var kv=krVal(ci,oi,ki);
-        html+='<div class="kr">';
-        html+='<div class="kr-head">';
-        html+='<span class="kr-tag" style="background:'+cat.color+'22;color:'+cat.color+'">KR'+(ki+1)+'</span>';
-        html+='<span class="kr-txt">'+kr.text+'</span>';
-        html+='<span class="kr-pct" style="color:'+cat.color+'">'+kv+'%</span></div>';
-        html+='<div class="kr-slider"><input type="range" min="0" max="100" value="'+kv+'" oninput="setKr('+ci+','+oi+','+ki+',+this.value)"/></div>';
-        html+='<div class="pbar"><div class="pbar-fill" style="width:'+kv+'%;background:'+cat.color+'"></div></div>';
+        var kDiv=document.createElement("div");
+        kDiv.className="kr";
+        var h="<div class=\"kr-head\"><span class=\"kr-tag\" style=\"background:"+cat.color+"22;color:"+cat.color+"\">KR"+(ki+1)+"</span><span class=\"kr-txt\">"+kr.text+"</span><span class=\"kr-pct\" style=\"color:"+cat.color+"\">"+kv+"%</span></div>";
+        h+="<div class=\"kr-slider\"><input type=\"range\" min=\"0\" max=\"100\" value=\""+kv+"\" data-ci=\""+ci+"\" data-oi=\""+oi+"\" data-ki=\""+ki+"\"/></div>";
+        h+="<div class=\"pbar\"><div class=\"pbar-fill\" style=\"width:"+kv+"%;background:"+cat.color+"\"></div></div>";
 
         kr.kts.forEach(function(kt,ti){
           var done=ktDone(ci,oi,ki,ti);
-          html+='<div class="kt">';
-          html+='<div class="kt-dot '+(done?'done':'')+'" onclick="toggleKt('+ci+','+oi+','+ki+','+ti+')"></div>';
-          html+='<div class="kt-txt '+(done?'done':'')+'" onclick="toggleKt('+ci+','+oi+','+ki+','+ti+')">'+kt+'</div></div>';
+          h+="<div class=\"kt\" data-ci=\""+ci+"\" data-oi=\""+oi+"\" data-ki=\""+ki+"\" data-ti=\""+ti+"\">";
+          h+="<div class=\"kt-dot"+(done?" done":"")+"\"></div>";
+          h+="<div class=\"kt-txt"+(done?" done":"")+"\">"+kt+"</div></div>";
         });
-        html+='</div>';
+        kDiv.innerHTML=h;
+        ob.appendChild(kDiv);
       });
-      html+='</div></div>';
+      card.appendChild(ob);
+      body.appendChild(card);
     });
-    html+='</div></div>';
+    block.appendChild(body);
+    appEl.appendChild(block);
   });
-  document.getElementById('app').innerHTML=html;
+
+  // Event delegation for sliders and KT clicks
+  appEl.querySelectorAll("input[type=range]").forEach(function(sl){
+    sl.addEventListener("input",function(){
+      var ci=+this.dataset.ci,oi=+this.dataset.oi,ki=+this.dataset.ki;
+      ST[uid(ci,oi,ki)]=+this.value;saveState();renderAll();
+    });
+  });
+  appEl.querySelectorAll(".kt").forEach(function(el){
+    el.addEventListener("click",function(){
+      var ci=+this.dataset.ci,oi=+this.dataset.oi,ki=+this.dataset.ki,ti=+this.dataset.ti;
+      var k=uid(ci,oi,ki,ti);ST[k]=!ST[k];saveState();renderAll();
+    });
+  });
 }
 
-function buildPayload(){
-  var p={};p['Дата']=new Date().toISOString().slice(0,10);p['Тип']='OKR';
+document.getElementById("sendBtn").addEventListener("click",function(){
+  var hook=localStorage.getItem(HOOKKEY),btn=this,txt=document.getElementById("sendTxt");
+  var p={};p["Дата"]=new Date().toISOString().slice(0,10);p["Тип"]="OKR";
   DATA.forEach(function(cat,ci){
-    p[cat.name+' (%)']=catPct(ci);
+    p[cat.name+" (%)"]=catPct(ci);
     cat.obs.forEach(function(obj,oi){
-      var oLabel='O'+(oi+1)+': '+obj.text.slice(0,40);
-      p[cat.icon+' '+oLabel+' (%)']=objPct(ci,oi);
-      obj.krs.forEach(function(kr,ki){p['KR'+(ki+1)+': '+kr.text.slice(0,35)]=krVal(ci,oi,ki)+'%'});
+      p[cat.icon+" O"+(oi+1)+": "+obj.text.slice(0,40)+" (%)"]=objPct(ci,oi);
+      obj.krs.forEach(function(kr,ki){p["KR"+(ki+1)+": "+kr.text.slice(0,35)]=krVal(ci,oi,ki)+"%"});
     });
   });
-  return p}
-function syncOKR(){
-  var hook=localStorage.getItem(HOOKKEY),btn=document.getElementById('sendBtn'),txt=document.getElementById('sendTxt');
-  var payload=buildPayload();
-  if(!hook){try{navigator.clipboard.writeText(JSON.stringify(payload,null,2))}catch(e){}toast('JSON скопійовано.');return}
-  btn.classList.add('busy');txt.textContent='Синхронізую…';
-  fetch(hook,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(function(){
-    btn.classList.remove('busy');btn.classList.add('ok');txt.textContent='OKR синхронізовано ✓';
-    setTimeout(function(){btn.classList.remove('ok');txt.textContent='Синхронізувати OKR'},3500);
-  }).catch(function(){btn.classList.remove('busy');txt.textContent='Синхронізувати OKR';toast('Помилка мережі.')})}
-var tt_=0;function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt_);tt_=setTimeout(function(){t.classList.remove('show')},2600)}
+  if(!hook){try{navigator.clipboard.writeText(JSON.stringify(p,null,2))}catch(e){}toast("JSON скопійовано.");return}
+  btn.classList.add("busy");txt.textContent="Синхронізую…";
+  fetch(hook,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)}).then(function(){
+    btn.classList.remove("busy");btn.classList.add("ok");txt.textContent="OKR синхронізовано ✓";
+    setTimeout(function(){btn.classList.remove("ok");txt.textContent="Синхронізувати OKR"},3500);
+  }).catch(function(){btn.classList.remove("busy");txt.textContent="Синхронізувати OKR";toast("Помилка мережі.")});
+});
+var tt_=0;function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(tt_);tt_=setTimeout(function(){t.classList.remove("show")},2600)}
 
 renderAll();
 </script>
